@@ -1,3 +1,5 @@
+`include "core_defines.v"
+//`include "../general/gnrl_dffs.v"
 module core_ex_regfile(
     input   clk,
     input   rst_n,

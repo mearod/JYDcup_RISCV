@@ -12,8 +12,8 @@ module gnrl_dfflr #(
 );
 
 always @(posedge clk or negedge rst_n) 
-begin:
-    if (rst_n == 1'b0) 
+begin
+    if (rst_n == 1'b0)
         dout <= RESET_VAL;
     else if (wen == 1'b1)
         dout <= din;
@@ -33,7 +33,7 @@ module gnrl_dffl #(
 );
 
 always @(posedge clk) 
-begin:
+begin
     if (wen == 1'b1)
         dout <= din;
 end
@@ -53,7 +53,7 @@ module gnrl_dffr #(
 );
 
 always @(posedge clk or negedge rst_n) 
-begin:
+begin
     if (rst_n == 1'b0) 
         dout <= RESET_VAL;
     else
