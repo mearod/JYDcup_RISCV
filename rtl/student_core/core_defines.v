@@ -30,3 +30,12 @@
 `define CORE_BJ_DEC_INST_BNE 2
 `define CORE_BJ_DEC_INST_BLT 3
 `define CORE_BJ_DEC_INST_BGE 4
+
+//lsu inst
+`define CORE_LSU_INST_WIDTH 6
+`define CORE_LSU_INST_LOAD 0
+`define CORE_LSU_INST_STORE 1
+`define CORE_LSU_INST_B 2
+`define CORE_LSU_INST_H 3
+`define CORE_LSU_INST_W 4
+`define CORE_LSU_INST_LU 5

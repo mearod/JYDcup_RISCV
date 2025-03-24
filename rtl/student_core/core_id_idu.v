@@ -10,10 +10,10 @@ module core_id_idu(
     output  valid_out,
     input   ready_out,
 
-    input   [`CORE_PC_WIDTH-1:0]i_pc,
-    input   [`CORE_INST_WIDTH-1:0]i_inst,
+    input   [`CORE_PC_WIDTH-1:0] i_pc,
+    input   [`CORE_INST_WIDTH-1:0] i_inst,
 
-    output  [`CORE_PC_WIDTH-1:0]o_pc,
+    output  [`CORE_PC_WIDTH-1:0] o_pc,
     output  o_rs1_ren,
     output  o_rs2_ren,
     output  o_rd_wen,
@@ -23,8 +23,9 @@ module core_id_idu(
 
     output  [`CORE_XLEN-1:0] o_imm,
 
-    output  [`CORE_BJ_DEC_INST_WIDTH-1:0]o_bj_dec_inst_bus,
-    output  [`CORE_ALU_INST_WIDTH-1:0]o_alu_inst_bus
+    output  [`CORE_BJ_DEC_INST_WIDTH-1:0] o_bj_dec_inst_bus,
+    output  [`CORE_ALU_INST_WIDTH-1:0] o_alu_inst_bus,
+    output  [`CORE_LSU_INST_WIDTH-1:0] o_lsu_inst_bus
 );
 
 
@@ -63,7 +64,8 @@ core_id_decode inst_decoder(
     .o_rd_idx        	(o_rd_idx         ),
     .o_imm           	(o_imm            ),
     .o_bj_dec_inst_bus 	(o_bj_dec_inst_bus  ),
-    .o_alu_inst_bus    	(o_alu_inst_bus     )
+    .o_alu_inst_bus    	(o_alu_inst_bus     ),
+    .o_lsu_inst_bus    	(o_lsu_inst_bus     )
 );
 
 assign o_pc = pc_reg;

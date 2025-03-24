@@ -12,8 +12,9 @@ module core_id_decode(
 
     output  [`CORE_XLEN-1:0] o_imm,
 
-    output  [`CORE_BJ_DEC_INST_WIDTH-1:0]o_bj_dec_inst_bus,
-    output  [`CORE_ALU_INST_WIDTH-1:0]o_alu_inst_bus
+    output  [`CORE_BJ_DEC_INST_WIDTH-1:0] o_bj_dec_inst_bus,
+    output  [`CORE_ALU_INST_WIDTH-1:0] o_alu_inst_bus,
+    output  [`CORE_LSU_INST_WIDTH-1:0] o_lsu_inst_bus
 );
 
 assign opcode  = i_inst[6:0];
@@ -148,6 +149,14 @@ assign o_alu_inst_bus[`CORE_ALU_INST_OP2_4]   = rv_jal | rv_jalr; //is op2 4?
 assign o_alu_inst_bus[`CORE_ALU_INST_OP2_IMM] = need_imm; //is op2 imm?
 ///////////
 
+//lsu inst
+assign o_lsu_inst_bus[`CORE_LSU_INST_LOAD]    = opcode_load;
+assign o_lsu_inst_bus[`CORE_LSU_INST_STORE]   = opcode_store;
+assign o_lsu_inst_bus[`CORE_LSU_INST_B]       = rv_lb | rv_sb;
+assign o_lsu_inst_bus[`CORE_LSU_INST_H]       = rv_lh | rv_sh;
+assign o_lsu_inst_bus[`CORE_LSU_INST_W]       = rv_lw | rv_sw;
+assign o_lsu_inst_bus[`CORE_LSU_INST_LU]      = rv_lbu | rv_lhu;
+///////////
 
 //mul inst:reserve
 
