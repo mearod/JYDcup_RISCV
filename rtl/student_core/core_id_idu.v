@@ -12,8 +12,11 @@ module core_id_idu(
 
     input   [`CORE_PC_WIDTH-1:0] i_pc,
     input   [`CORE_INST_WIDTH-1:0] i_inst,
+    input   i_branch_predict,
 
     output  [`CORE_PC_WIDTH-1:0] o_pc,
+    output  o_branch_predict,
+
     output  o_rs1_ren,
     output  o_rs2_ren,
     output  o_rd_wen,
@@ -34,6 +37,15 @@ wire pipeline_update = valid_in & ready_in;
 
 assign ready_in = ready_out;
 assign valid_out = valid_in; //to do
+
+wire [`CORE_PC_WIDTH-1:0]branch_predict_reg;
+gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)branch_predict_id(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(i_branch_predict    ),
+    .dout  	(branch_predict_reg   ),
+    .wen   	(pipeline_update    )
+);
 
 wire [`CORE_PC_WIDTH-1:0]pc_reg;
 gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)pc_id(
@@ -69,5 +81,6 @@ core_id_decode inst_decoder(
 );
 
 assign o_pc = pc_reg;
+assign o_branch_predict = branch_predict_reg;
 
 endmodule

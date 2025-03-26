@@ -17,12 +17,12 @@ module core_id_decode(
     output  [`CORE_LSU_INST_WIDTH-1:0] o_lsu_inst_bus
 );
 
-assign opcode  = i_inst[6:0];
-assign rs1 = i_inst[19:15];
-assign rs2 = i_inst[24:20];
-assign rd  = i_inst[11:7];
-assign func3  = i_inst[14:12];
-assign func7  = i_inst[31:25];
+wire opcode  = i_inst[6:0];
+wire rs1 = i_inst[19:15];
+wire rs2 = i_inst[24:20];
+wire rd  = i_inst[11:7];
+wire func3  = i_inst[14:12];
+wire func7  = i_inst[31:25];
 
 wire func3_000 = (func3 == 3'b000);
 wire func3_001 = (func3 == 3'b001);
@@ -126,7 +126,8 @@ wire rv_csrrci = opcode_system & func3_111;
 
 
 //bj_dec inst bj decoder
-assign o_bj_dec_inst_bus[`CORE_BJ_DEC_INST_JAL]  = rv_jal | rv_jalr;
+assign o_bj_dec_inst_bus[`CORE_BJ_DEC_INST_JAL]  = rv_jal;
+assign o_bj_dec_inst_bus[`CORE_BJ_DEC_INST_JALR] = rv_jalr;
 assign o_bj_dec_inst_bus[`CORE_BJ_DEC_INST_BEQ]  = rv_beq;
 assign o_bj_dec_inst_bus[`CORE_BJ_DEC_INST_BNE]  = rv_bne;
 assign o_bj_dec_inst_bus[`CORE_BJ_DEC_INST_BLT]  = rv_blt | rv_bltu;
@@ -134,19 +135,19 @@ assign o_bj_dec_inst_bus[`CORE_BJ_DEC_INST_BGE]  = rv_bge | rv_bgeu;
 ////////////
 
 //alu inst
-assign o_alu_inst_bus[`CORE_ALU_INST_ADD]     = rv_lui | rv_auipc | rv_jal | rv_jalr | opcode_branch | opcode_load | opcode_store | rv_addi | rv_add;
+assign o_alu_inst_bus[`CORE_ALU_INST_ADD]     = rv_lui | rv_auipc | rv_jal | rv_jalr | opcode_load | opcode_store | rv_addi | rv_add;
 assign o_alu_inst_bus[`CORE_ALU_INST_SUB]     = rv_sub;
 assign o_alu_inst_bus[`CORE_ALU_INST_CMP]     = rv_slt | rv_slti | rv_beq | rv_bne | rv_blt | rv_bge;
 assign o_alu_inst_bus[`CORE_ALU_INST_CMP_U]   = rv_sltu | rv_sltui | rv_bltu | rv_bgeu;
-assign o_alu_inst_bus[`CORE_ALU_INST_XOR]     = rv_xor  | xori;
+assign o_alu_inst_bus[`CORE_ALU_INST_XOR]     = rv_xor | xori;
 assign o_alu_inst_bus[`CORE_ALU_INST_SLL]     = rv_sll | rv_slli;
 assign o_alu_inst_bus[`CORE_ALU_INST_SRL]     = rv_srl | rv_srli;
 assign o_alu_inst_bus[`CORE_ALU_INST_SRA]     = rv_sra | rv_srai;
 assign o_alu_inst_bus[`CORE_ALU_INST_OR ]     = rv_or  | rv_ori;
 assign o_alu_inst_bus[`CORE_ALU_INST_AND]     = rv_and | rv_andi;
 assign o_alu_inst_bus[`CORE_ALU_INST_OP1_PC]  = rv_jal | rv_jalr; //is op1 pc?
-assign o_alu_inst_bus[`CORE_ALU_INST_OP2_4]   = rv_jal | rv_jalr; //is op2 4?
 assign o_alu_inst_bus[`CORE_ALU_INST_OP2_IMM] = need_imm; //is op2 imm?
+assign o_alu_inst_bus[`CORE_ALU_INST_RS2ADR]  = rs2; //rs2 address
 ///////////
 
 //lsu inst
