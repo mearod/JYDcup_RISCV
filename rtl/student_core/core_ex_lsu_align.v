@@ -49,7 +49,8 @@ wire wmask_1000 = lsu_inst_bus[`CORE_LSU_INST_B] & low_addr_11;
 assign flag_unalign_write = ~(wmask_1111 | wmask_0011 | wmask_1100 | wmask_0001 | wmask_0010 | wmask_0100 | wmask_1000);
 /////
 
-//output assign
+
+//////////output select and assign///
 assign wmask = 
       ({`CORE_LSU_WMASK_WIDTH{wmask_1111}} & `CORE_LSU_WMASK_WIDTH'b1111)
     | ({`CORE_LSU_WMASK_WIDTH{wmask_0011}} & `CORE_LSU_WMASK_WIDTH'b0011)
@@ -59,8 +60,6 @@ assign wmask =
     | ({`CORE_LSU_WMASK_WIDTH{wmask_0100}} & `CORE_LSU_WMASK_WIDTH'b0100)
     | ({`CORE_LSU_WMASK_WIDTH{wmask_1000}} & `CORE_LSU_WMASK_WIDTH'b1000)
 ;
-////////////
-
 
 assign write_data_aligned  =
       ({`CORE_XLEN{low_addr_00}} & addr00_aligned)
@@ -80,6 +79,6 @@ assign read_data_aligned  = lsu_inst_bus[`CORE_LSU_INST_LU] ?
     | ({`CORE_XLEN{lsu_inst_bus[`CORE_LSU_INST_H]}} & lh_aligned)
     | ({`CORE_XLEN{lsu_inst_bus[`CORE_LSU_INST_W]}} & lw_aligned)
 );
-//////////
+/////////////////////////////////////
 
 endmodule

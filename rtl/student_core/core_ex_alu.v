@@ -10,7 +10,7 @@ module core_ex_alu(
 
     output  zero_flag,
     output  less_flag,
-    output  [`CORE_XLEN-1:0] alu_result,
+    output  [`CORE_XLEN-1:0] alu_result
 );
 
 //op select///

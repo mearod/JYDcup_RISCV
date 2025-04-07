@@ -1,23 +1,23 @@
 `include "core_defines.v"
 
-module core_ex_lsu_test(
+module core_ex_lsu_dpic_test(
     input   clk,
     input   rst_n,
 
     output  valid_out,
     output  ready_in,
 
-    input   [`CORE_LSU_INST_WIDTH-1:0] lsu_inst_bus,
+    input   [`CORE_LSU_INST_WIDTH-1:0] i_lsu_inst_bus,
 
-    input   [`CORE_XLEN-1:0] mem_addr,
-    input   [`CORE_XLEN-1:0] write_data,
+    input   [`CORE_XLEN-1:0] i_mem_addr,
+    input   [`CORE_XLEN-1:0] i_write_data,
 
     output  [7:0]wmask,
     output  flag_unalign_write,
     output  [`CORE_XLEN-1:0] read_data
 );
 
-///state machine///
+///state machine////
 localparam ISU_IDLE = 1'b0;
 localparam ISU_WORK = 1'b1;
 
@@ -38,8 +38,11 @@ assign isu_state_nxt =
         ISU_WORK:
         isu_state
 ;
-//////////////
+///////////////
 
+
+
+/////////align module
 wire [`CORE_XLEN-1:0] read_data_unaligned;
 wire [`CORE_XLEN-1:0] write_data_aligned;
 
@@ -53,11 +56,10 @@ core_ex_lsu_align u_core_ex_lsu_align(
     .wmask                  (wmask),
     .flag_unalign_write     (flag_unalign_write)
 );
+/////////////////
 
-//assume it take only 1 tick to access mem in test module.
-assign valid_out    = (isu_state == ISU_WORK);
-assign ready_in     = (isu_state == ISU_IDLE);
 
+/////////DPI_C:for verilator test
 `ifdef DPI_C
 wire lsu_wen = (isu_state == ISU_WORK) & lsu_inst_bus[`CORE_LSU_INST_STORE];
 
@@ -79,4 +81,43 @@ always @(posedge clk) begin
     end
 end
 `endif
+////////////////////
+
+
+
+//assume it take only 1 tick to access mem in test module.
+assign valid_out    = (isu_state == ISU_WORK);
+assign ready_in     = (isu_state == ISU_IDLE);
+
+
+
+///pipeline reg///
+wire [`CORE_LSU_INST_WIDTH-1:0] lsu_inst_bus;
+gnrl_dfflr #(`CORE_LSU_INST_WIDTH,`CORE_LSU_INST_WIDTH'b0)lsu_inst_bus_reg(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(i_lsu_inst_bus    ),
+    .dout  	(lsu_inst_bus   ),
+    .wen   	(ready_in    )
+);
+
+wire [`CORE_LSU_INST_WIDTH-1:0] mem_addr;
+gnrl_dfflr #(`CORE_XLEN,`CORE_XLEN'b0)mem_addr_reg(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(i_mem_addr    ),
+    .dout  	(mem_addr   ),
+    .wen   	(ready_in    )
+);
+
+wire [`CORE_XLEN-1:0] write_data;
+gnrl_dfflr #(`CORE_XLEN,`CORE_XLEN'b0)write_data_reg(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(i_write_data    ),
+    .dout  	(write_data   ),
+    .wen   	(ready_in    )
+);
+//////////////
+
 endmodule

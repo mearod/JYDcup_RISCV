@@ -41,17 +41,17 @@ wire func7_0100000 = (func7 == 7'b0100000);
 //opcode classify ///////////
 wire opcode_1_0_11  = (opcode[1:0] == 2'b11);
 
-wire opcode_lui     = (opcode == 5'b01101) & opcode_1_0_11;
-wire opcode_auipc   = (opcode == 5'b00101) & opcode_1_0_11;
-wire opcode_jal     = (opcode == 5'b11011) & opcode_1_0_11;
-wire opcode_jalr    = (opcode == 5'b11001) & opcode_1_0_11;
-wire opcode_branch  = (opcode == 5'b11000) & opcode_1_0_11;
-wire opcode_load    = (opcode == 5'b00000) & opcode_1_0_11;
-wire opcode_store   = (opcode == 5'b01000) & opcode_1_0_11;
-wire opcode_alu_i   = (opcode == 5'b00100) & opcode_1_0_11;
-wire opcode_alu_r   = (opcode == 5'b01100) & opcode_1_0_11;
-wire opcode_fence   = (opcode == 5'b00011) & opcode_1_0_11;
-wire opcode_system  = (opcode == 5'b11100) & opcode_1_0_11;
+wire opcode_lui     = (opcode[6:2] == 5'b01101) & opcode_1_0_11;
+wire opcode_auipc   = (opcode[6:2] == 5'b00101) & opcode_1_0_11;
+wire opcode_jal     = (opcode[6:2] == 5'b11011) & opcode_1_0_11;
+wire opcode_jalr    = (opcode[6:2] == 5'b11001) & opcode_1_0_11;
+wire opcode_branch  = (opcode[6:2] == 5'b11000) & opcode_1_0_11;
+wire opcode_load    = (opcode[6:2] == 5'b00000) & opcode_1_0_11;
+wire opcode_store   = (opcode[6:2] == 5'b01000) & opcode_1_0_11;
+wire opcode_alu_i   = (opcode[6:2] == 5'b00100) & opcode_1_0_11;
+wire opcode_alu_r   = (opcode[6:2] == 5'b01100) & opcode_1_0_11;
+wire opcode_fence   = (opcode[6:2] == 5'b00011) & opcode_1_0_11;
+wire opcode_system  = (opcode[6:2] == 5'b11100) & opcode_1_0_11;
 /////////////
 
 

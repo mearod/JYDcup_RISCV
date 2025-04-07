@@ -10,9 +10,17 @@ module core_id_idu(
     output  valid_out,
     input   ready_out,
 
+    input   [`CORE_XLEN-1:0] rs1_dat,
+    input   [`CORE_XLEN-1:0] rs2_dat,
+
     input   [`CORE_PC_WIDTH-1:0] i_pc,
     input   [`CORE_INST_WIDTH-1:0] i_inst,
     input   i_branch_predict,
+
+    input   rd_idx_forward,
+
+    output  [`CORE_XLEN-1:0] o_rs1_dat,
+    output  [`CORE_XLEN-1:0] o_rs2_dat,
 
     output  [`CORE_PC_WIDTH-1:0] o_pc,
     output  o_branch_predict,
@@ -33,11 +41,14 @@ module core_id_idu(
 
 
 //pipline related//////
-wire pipeline_update = valid_in & ready_in;
+wire pipeline_update = valid_in & ready_in & valid_out & ready_out;
 
 assign ready_in = ready_out;
 assign valid_out = valid_in; //to do
+////////////////////
 
+
+////pipeline regs//////
 wire [`CORE_PC_WIDTH-1:0]branch_predict_reg;
 gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)branch_predict_id(
     .clk   	(clk    ),
@@ -64,6 +75,7 @@ gnrl_dfflr #(`CORE_INST_WIDTH,`CORE_INST_WIDTH'b0)inst_id(
     .dout  	(inst_reg   ),
     .wen   	(pipeline_update    )
 );
+
 ////////////////////
 
 core_id_decode inst_decoder(
@@ -82,5 +94,8 @@ core_id_decode inst_decoder(
 
 assign o_pc = pc_reg;
 assign o_branch_predict = branch_predict_reg;
+
+assign o_rs1_dat =  rs1_dat;
+assign o_rs2_dat =  rs2_dat;
 
 endmodule

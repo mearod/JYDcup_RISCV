@@ -11,7 +11,7 @@ module core_ex_regfile(
 
     input   wb_dest_wen,
     input   [`CORE_RFIDX_WIDTH-1:0] wb_dest_idx,
-    input   [`CORE_XLEN-1:0] wb_dest_dat,
+    input   [`CORE_XLEN-1:0] wb_dest_dat
 );
 
 wire [`CORE_XLEN-1:0] rf_r [`CORE_RF_NUM-1:0];
