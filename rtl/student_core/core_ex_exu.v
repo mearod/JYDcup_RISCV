@@ -44,11 +44,16 @@ module core_ex_exu(
 );
 
 //pipeline related////
-assign valid_out    = wb_en;
-assign ready_in     = valid_out;
+wire pipeline_update = ready_in & valid_in;
+assign valid_out     = wb_en;
+wire ready_in_next   = wb_en | ~valid_in & ready_in;
 
-wire pipeline_update    = valid_out & ready_in & valid_in & ready_out;
-
+gnrl_dffr #(1, 1'b1) exu_ready_in(
+    .clk   	(clk     ),
+    .rst_n 	(rst_n   ),
+    .din   	(ready_in_next),
+    .dout  	(ready_in     ),
+);
 /////////////////////
 
 //pipeline regs//////////

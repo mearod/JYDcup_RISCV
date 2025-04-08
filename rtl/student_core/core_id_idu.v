@@ -17,7 +17,8 @@ module core_id_idu(
     input   [`CORE_INST_WIDTH-1:0] i_inst,
     input   i_branch_predict,
 
-    input   rd_idx_forward,
+    input   [`CORE_RFIDX_WIDTH-1:0] rd_idx_ex_forward,
+		input   rd_wen_ex_forward,
 
     output  [`CORE_XLEN-1:0] o_rs1_dat,
     output  [`CORE_XLEN-1:0] o_rs2_dat,
@@ -41,10 +42,19 @@ module core_id_idu(
 
 
 //pipline related//////
-wire pipeline_update = valid_in & ready_in & valid_out & ready_out;
+wire pipeline_update = valid_in & ready_in;
+wire valid_out_next  = pipeline_update | ~ready_out & valid_out;
+wire raw_conflict    = (o_rs1_ren & (o_rs1_idx == rd_idx_ex_forward) 
+                     | o_rs2_ren & (o_rs2_idx == rd_idx_ex_forward))
+										 & (rd_idx_ex_forward != 0) & rd_wen_ex_forward & ~ready_out;
+assign ready_in      = ~raw_conflict & (ready_out | ~valid_out);
 
-assign ready_in = ready_out;
-assign valid_out = valid_in; //to do
+gnrl_dffr #(1, 1'b0) idu_valid_out(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(valid_out_next),
+    .dout  	(valid_out     ),
+);
 ////////////////////
 
 

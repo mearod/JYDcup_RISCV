@@ -5,7 +5,7 @@ module core_if_ifu(
     input   rst_n,
 
     input   valid_in,
-    output   ready_in,
+    output  ready_in,
     
     output  valid_out,
     input   ready_out,
@@ -20,11 +20,9 @@ module core_if_ifu(
 );
 
 //pipeline related////
-assign valid_out    = flag_fetched;
-assign ready_in     = ready_out & valid_out;
-
-wire pc_update_en   = valid_out & ready_out & valid_in & ready_in;
-wire flag_fetched   = 1'b1;///test:fetch only take 1 tick
+wire pipeline_update = valid_out & ready_out;
+assign valid_out     = 1'b1;//rvalid; //TODO: rvalid not defined
+assign ready_in      = ready_out | ~valid_out;
 /////////////////////
 
 
@@ -64,7 +62,7 @@ wire branch_jump_predict;
 core_if_pc u_core_if_pc(
     .clk                 	(clk                  ),
     .rst_n               	(rst_n                ),
-    .pc_update_en        	(pc_update_en         ),
+    .pc_update_en        	(pipeline_update      ),
     .pipe_flush_req      	(i_pipe_flush_req       ),
     .bju_pc_bj_predict   	(bju_pc_bj_predict    ),
     .bju_pc_offset       	(bju_pc_offset        ),
