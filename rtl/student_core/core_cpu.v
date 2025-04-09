@@ -104,8 +104,6 @@ core_id_regfile u_core_id_regfile(
 // output declaration of module core_ex_exu
 wire ready_id_ex;
 wire valid_ex;
-wire [`CORE_RFIDX_WIDTH-1:0] i_rs1_idx;
-wire [`CORE_RFIDX_WIDTH-1:0] i_rs2_idx;
 wire cmt_pipeline_flush_req;
 wire [`CORE_PC_WIDTH-1:0] cmt_flush_pc;
 wire wb_en;
@@ -136,8 +134,6 @@ core_ex_exu u_core_ex_exu(
     .i_bj_dec_inst_bus      	(idu_bj_dec_inst_bus       ),
     .i_alu_inst_bus         	(idu_alu_inst_bus          ),
     .i_lsu_inst_bus         	(idu_lsu_inst_bus          ),
-    .i_rs1_idx              	(idu_rs1_idx               ),
-    .i_rs2_idx              	(idu_rs2_idx               ),
     .cmt_pipeline_flush_req 	(cmt_pipeline_flush_req  ),
     .cmt_flush_pc           	(cmt_flush_pc            ),
     .wb_en                  	(wb_en                   ),

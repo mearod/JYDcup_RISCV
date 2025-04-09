@@ -29,10 +29,7 @@ module core_ex_exu(
     input   [`CORE_ALU_INST_WIDTH-1:0] i_alu_inst_bus,
     input   [`CORE_LSU_INST_WIDTH-1:0] i_lsu_inst_bus,
 
-    output  [`CORE_RFIDX_WIDTH-1:0] i_rs1_idx,
-    output  [`CORE_RFIDX_WIDTH-1:0] i_rs2_idx,
-
-	output  cmt_pipeline_flush_req,
+    output  cmt_pipeline_flush_req,
     output  [`CORE_PC_WIDTH-1:0] cmt_flush_pc,
 
     output  wb_en,

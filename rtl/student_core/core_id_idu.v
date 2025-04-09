@@ -58,7 +58,7 @@ gnrl_dffr #(1, 1'b0) idu_valid_out(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
     .din   	(valid_out_next),
-    .dout  	(valid_out_tmp ),
+    .dout  	(valid_out_tmp )
 );
 ////////////////////
 
