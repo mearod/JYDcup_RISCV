@@ -42,7 +42,8 @@ void init_difftest(char *ref_so_file, long img_size, int port, mem_t *mem_arr, u
 
   ref_difftest_init(port, mem_arr, total_mem);
   ref_difftest_memcpy(MEM_BASE, guest2host(MEM_BASE), img_size, DIFFTEST_TO_REF);
-  ref_difftest_regcpy(&cpu_gpr(0), &signal(ifu_pc), DIFFTEST_TO_REF);
+	uint32_t pc_start = 0x80000000;
+  ref_difftest_regcpy(&cpu_gpr(0), &pc_start, DIFFTEST_TO_REF);
 }
 
 void print_difftest_reg (int pc, int i) {
@@ -50,14 +51,15 @@ void print_difftest_reg (int pc, int i) {
 	uint32_t ref_pc;
   ref_difftest_regcpy(ref_r, &ref_pc, DIFFTEST_TO_DUT);
 	if (pc) printf("pc\t%#x\n", ref_pc);
-	else printf("x%d\t%#x\n", i+1, ref_r[i]);
+	else printf("x%d\t%#x\n", i, ref_r[i]);
 }
 
 static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
-	for (int i = 0; i < TOTAL_REG - 1; ++i) {
+	for (int i = 0; i < TOTAL_REG; ++i) {
 		if (ref[i] != cpu_gpr(i)) {
 			trigger_difftest = 1;
 			print_difftest_reg(0, i);
+			printf("%x, %x\n", cpu_gpr(i), ref[i]);
 		}
 	}
 	//if (pc != ref_pc) trigger_difftest = 1;

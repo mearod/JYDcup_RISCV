@@ -37,6 +37,7 @@ module core_ex_exu(
     output  [`CORE_XLEN-1:0] wb_data,
 
 
+    output  exu_busy,
     output  [`CORE_RFIDX_WIDTH-1:0] rd_idx_ex_forward,
     output  rd_wen_ex_forward,
     output  [`CORE_XLEN-1:0] rd_dat_ex_forward
@@ -51,8 +52,10 @@ wire ready_in_next   = lsu_valid_out | ~valid_in & ready_in;
 assign ready_in      = ~lsu_used | ready_in_tmp;
 
 wire flush_state;
-wire flush_state_next = valid_in & ready_in;
+wire flush_state_next = pipeline_update;
 assign cmt_pipeline_flush_req = cmt_pipeline_flush_req_tmp & flush_state;
+
+wire exu_busy_next   = pipeline_update | ~wb_en;
 
 gnrl_dffr #(1, 1'b1) exu_ready_in(
     .clk   	(clk     ),
@@ -66,6 +69,13 @@ gnrl_dffr #(1, 1'b0) exu_flush_state(
     .rst_n 	(rst_n   ),
     .din   	(flush_state_next),
     .dout  	(flush_state)
+);
+
+gnrl_dffr #(1, 1'b0) exu_busy_state(
+    .clk   	(clk     ),
+    .rst_n 	(rst_n   ),
+    .din   	(exu_busy_next),
+    .dout  	(exu_busy     )
 );
 /////////////////////
 
@@ -99,7 +109,7 @@ gnrl_dffl #(`CORE_XLEN)rs1_dat_ex(
 wire [`CORE_XLEN-1:0]rs2_dat_reg;
 gnrl_dffl #(`CORE_XLEN)rs2_dat_ex(
     .clk   	(clk    ),
-    .din   	(i_rs1_dat    ),
+    .din   	(i_rs2_dat    ),
     .dout  	(rs2_dat_reg   ),
     .wen   	(pipeline_update    )
 );

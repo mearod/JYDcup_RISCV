@@ -42,20 +42,23 @@ void cpu_exec(unsigned long n) {
 	for (; n > 0; --n) {
 		one_cycle();
 #ifdef DIFFTEST
+		static int write_back = 0;
+		if (write_back == 1) difftest_step();
+		write_back = top->inst_end;
 #endif
 		if (top->rv_ebreak_sim || trigger_difftest) break;
 	}
 
 	if (trigger_difftest) {
 		reg_display();
-		//printf("\33[1;31mdifftest ABORT\33[1;0m at pc = %#x\n", pc);
+		printf("\33[1;31mdifftest ABORT\33[1;0m at pc = %#x\n", signal(ifu_pc));
 		return;
 	}
 	if (!top->rv_ebreak_sim) return;
 	if (cpu_gpr(10))
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
-	//printf("at pc = %#x\n", signal(ifu_pc));
+	printf("at pc = %#x\n", signal(ifu_pc));
 #ifdef PRINT_PERF
 	print_statistic();
 #endif

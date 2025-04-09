@@ -3,8 +3,11 @@
 module core_cpu(
     input   clk,
     input   rst_n,
-		output  rv_ebreak_sim
+		output  rv_ebreak_sim,
+		output  inst_end
 );
+
+assign inst_end = wb_en & exu_busy;
 
 // output declaration of module core_ifu_rom_dpic_test
 wire [`CORE_INST_WIDTH-1:0] rom_inst;
@@ -118,14 +121,14 @@ wire [`CORE_XLEN-1:0] rd_dat_ex_forward;
 wire exu_busy;
 
 core_ex_exu u_core_ex_exu(
-    .clk                    	(clk                     ),
-    .rst_n                  	(rst_n                   ),
-    .valid_in               	(valid_id_ex                ),
-    .ready_in               	(ready_id_ex                ),
-    .valid_out              	(valid_ex               ),
-    .ready_out              	(1'b1               ),
+    .clk                    	(clk                       ),
+    .rst_n                  	(rst_n                     ),
+    .valid_in               	(valid_id_ex               ),
+    .ready_in               	(ready_id_ex               ),
+    .valid_out              	(valid_ex                  ),
+    .ready_out              	(1'b1                      ),
     .i_pc                   	(idu_pc                    ),
-    .i_branch_predict       	(idu_branch_jump_predict        ),
+    .i_branch_predict       	(idu_branch_jump_predict   ),
     .i_rs1_dat              	(idu_rs1_dat               ),
     .i_rs2_dat              	(idu_rs2_dat               ),
     .i_rs1_ren              	(idu_rs1_ren               ),
@@ -138,14 +141,15 @@ core_ex_exu u_core_ex_exu(
     .i_bj_dec_inst_bus      	(idu_bj_dec_inst_bus       ),
     .i_alu_inst_bus         	(idu_alu_inst_bus          ),
     .i_lsu_inst_bus         	(idu_lsu_inst_bus          ),
-    .cmt_pipeline_flush_req 	(cmt_pipeline_flush_req  ),
-    .cmt_flush_pc           	(cmt_flush_pc            ),
-    .wb_en                  	(wb_en                   ),
-    .wb_idx                  	(wb_idx                   ),
-    .wb_data                	(wb_data                 ),
-    .rd_idx_ex_forward         	(rd_idx_ex_forward          ),
-    .rd_wen_ex_forward         	(rd_wen_ex_forward          ),
-    .rd_dat_ex_forward         	(rd_dat_ex_forward          )
+    .cmt_pipeline_flush_req 	(cmt_pipeline_flush_req    ),
+    .cmt_flush_pc           	(cmt_flush_pc              ),
+    .wb_en                  	(wb_en                     ),
+    .wb_idx                  	(wb_idx                    ),
+    .wb_data                	(wb_data                   ),
+    .exu_busy                 (exu_busy                  ),
+    .rd_idx_ex_forward       	(rd_idx_ex_forward         ),
+    .rd_wen_ex_forward       	(rd_wen_ex_forward         ),
+    .rd_dat_ex_forward       	(rd_dat_ex_forward         )
 );
 
 

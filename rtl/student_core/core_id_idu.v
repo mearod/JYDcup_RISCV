@@ -49,14 +49,15 @@ module core_id_idu(
 
 //pipline related//////
 wire pipeline_update = valid_in & ready_in;
-wire valid_out_next  = (pipeline_update | ~ready_out & valid_out) & ~i_pipe_flush_req;
+wire valid_out_next  = (pipeline_update | ~(ready_out & valid_out) & valid_out_tmp) 
+                     & ~i_pipe_flush_req;
 wire raw_conflict    = (o_rs1_ren & (o_rs1_idx == rd_idx_ex_forward) 
                      | o_rs2_ren & (o_rs2_idx == rd_idx_ex_forward))
-										 & (rd_idx_ex_forward != 0) & rd_wen_ex_forward & (~ready_out | exu_busy);
-assign ready_in      = ~raw_conflict & (ready_out | ~valid_out);
+										 & (rd_idx_ex_forward != 0) & rd_wen_ex_forward & exu_busy;
+assign ready_in      = (ready_out | ~valid_out) & ~raw_conflict;
 
 wire valid_out_tmp;
-assign valid_out = valid_out_tmp & ~i_pipe_flush_req;
+assign valid_out = valid_out_tmp & ~i_pipe_flush_req & ~raw_conflict;
 
 gnrl_dffr #(1, 1'b0) idu_valid_out(
     .clk   	(clk    ),
