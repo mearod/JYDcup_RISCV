@@ -7,9 +7,10 @@
 
 int batch_mode = 0;
 int wave_trace = 0;
+int monitor_start = 0;
 static int cmd_help(char *args);
 
-static void set_batch_mode() {
+void set_batch_mode() {
 	batch_mode = 1;
 }
 
@@ -120,6 +121,8 @@ static int cmd_help(char *args) {
 
 void sdb_mainloop() {
 	reset(10);
+	monitor_start = 1;
+	reset(1);
 	if (batch_mode) {
 		cmd_c(NULL);
 		return;

@@ -2,12 +2,14 @@
 #include <memory.h>
 #include <time.h>
 
+extern int monitor_start;
+
 mem_t mem_arr[TOTAL_MEM] = {
 	(mem_t){MEM_BASE, NULL, MEM_SIZE, "psram"},
-	(mem_t){MROM_BASE, NULL, MROM_SIZE, "mrom"},
-	(mem_t){SRAM_BASE, NULL, SRAM_SIZE, "sram"},
-	(mem_t){FLASH_BASE, NULL, FLASH_SIZE, "flash"},
-	(mem_t){SDRAM_BASE, NULL, SDRAM_SIZE, "sdram"},
+//	(mem_t){MROM_BASE, NULL, MROM_SIZE, "mrom"},
+//	(mem_t){SRAM_BASE, NULL, SRAM_SIZE, "sram"},
+//	(mem_t){FLASH_BASE, NULL, FLASH_SIZE, "flash"},
+//	(mem_t){SDRAM_BASE, NULL, SDRAM_SIZE, "sdram"},
 };
 uint32_t total_mem = TOTAL_MEM;
 
@@ -33,6 +35,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 }
 
 extern "C" int pmem_read(int raddr) {
+	if (monitor_start == 0) return 0;
 	uint8_t *haddr = guest2host(raddr & ~0x3u);
 	if (!(haddr >= memory && haddr <= memory + MEM_SIZE)) {
 		printf("\nread %x out of bound\n\n", raddr);

@@ -12,8 +12,8 @@ const char *regs[] = {
 void reg_display() {
 	uint32_t pc = signal(ifu_pc);
 	printf("pc\t%#x\t%d\n", pc, pc);
-	for (int i = 1; i < TOTAL_REGS; ++i) {
-		uint32_t reg_val = signal(my_reg__DOT__rf[i-1]);
+	for (int i = 0; i < TOTAL_REGS; ++i) {
+		uint32_t reg_val = cpu_gpr(i);
 		printf("%2d:%s\t%#x\t%d\n", i, regs[i], reg_val, reg_val);
 	}
 }

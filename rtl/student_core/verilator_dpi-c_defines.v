@@ -1,4 +1,4 @@
-//`define DPI_C
+`define DPI_C
 
 `ifdef DPI_C
 import "DPI-C" function int pmem_read(input int raddr);

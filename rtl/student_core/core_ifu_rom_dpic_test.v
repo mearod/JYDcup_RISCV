@@ -2,7 +2,7 @@
 
 module core_ifu_rom_dpic_test(
     input   [`CORE_PC_WIDTH-1:0] pc,
-    output  [`CORE_INST_WIDTH-1:0] inst
+    output  reg [`CORE_INST_WIDTH-1:0] inst
 );
 
 /////////DPI_C:for verilator test

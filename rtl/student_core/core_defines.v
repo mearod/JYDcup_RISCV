@@ -1,4 +1,3 @@
-`include "verilator_dpi-c_defines.v"
 //cpu information
 `define CORE_XLEN 32
 `define CORE_INST_WIDTH 32

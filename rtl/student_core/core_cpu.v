@@ -2,7 +2,8 @@
 
 module core_cpu(
     input   clk,
-    input   rst_n
+    input   rst_n,
+		output  rv_ebreak_sim
 );
 
 // output declaration of module core_ifu_rom_dpic_test
@@ -81,7 +82,8 @@ core_id_idu u_core_id_idu(
     .o_imm             	(idu_imm              ),
     .o_bj_dec_inst_bus 	(idu_bj_dec_inst_bus  ),
     .o_alu_inst_bus    	(idu_alu_inst_bus     ),
-    .o_lsu_inst_bus    	(idu_lsu_inst_bus     )
+    .o_lsu_inst_bus    	(idu_lsu_inst_bus     ),
+		.rv_ebreak_sim      (rv_ebreak_sim        )
 );
 
 

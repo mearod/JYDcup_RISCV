@@ -43,7 +43,7 @@ assign isu_state_nxt =
 
 
 /////////align module
-wire [`CORE_XLEN-1:0] read_data_unaligned;
+reg  [`CORE_XLEN-1:0] read_data_unaligned;
 wire [`CORE_XLEN-1:0] write_data_aligned;
 
 core_ex_lsu_align u_core_ex_lsu_align(
