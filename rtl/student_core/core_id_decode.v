@@ -17,12 +17,12 @@ module core_id_decode(
     output  [`CORE_LSU_INST_WIDTH-1:0] o_lsu_inst_bus
 );
 
-wire opcode  = i_inst[6:0];
-wire rs1 = i_inst[19:15];
-wire rs2 = i_inst[24:20];
-wire rd  = i_inst[11:7];
-wire func3  = i_inst[14:12];
-wire func7  = i_inst[31:25];
+wire [6:0]opcode  = i_inst[6:0];
+wire [4:0]rs1 = i_inst[19:15];
+wire [4:0]rs2 = i_inst[24:20];
+wire [4:0]rd  = i_inst[11:7];
+wire [2:0]func3  = i_inst[14:12];
+wire [6:0]func7  = i_inst[31:25];
 
 wire func3_000 = (func3 == 3'b000);
 wire func3_001 = (func3 == 3'b001);
@@ -111,8 +111,8 @@ wire rv_and    = opcode_alu_r & func3_111 & func7_0000000;
 wire rv_fence      = opcode_fence & func3_000;
 wire rv_fence_i    = opcode_fence & func3_001;
 
-wire rv_ecall  = opcode_system & (i_inst[31:7] == 32'b0);
-wire rv_ebreak = opcode_system & (i_inst[31:7] == 32'b0000000000010000000000000);
+wire rv_ecall  = opcode_system & (i_inst[31:7] == 25'b0);
+wire rv_ebreak = opcode_system & (i_inst[31:7] == 25'b0000000000010000000000000);
 
 wire rv_csrrw  = opcode_system & func3_001;
 wire rv_csrrs  = opcode_system & func3_010;
@@ -138,8 +138,8 @@ assign o_bj_dec_inst_bus[`CORE_BJ_DEC_INST_BGE]  = rv_bge | rv_bgeu;
 assign o_alu_inst_bus[`CORE_ALU_INST_ADD]     = rv_lui | rv_auipc | rv_jal | rv_jalr | opcode_load | opcode_store | rv_addi | rv_add;
 assign o_alu_inst_bus[`CORE_ALU_INST_SUB]     = rv_sub;
 assign o_alu_inst_bus[`CORE_ALU_INST_CMP]     = rv_slt | rv_slti | rv_beq | rv_bne | rv_blt | rv_bge;
-assign o_alu_inst_bus[`CORE_ALU_INST_CMP_U]   = rv_sltu | rv_sltui | rv_bltu | rv_bgeu;
-assign o_alu_inst_bus[`CORE_ALU_INST_XOR]     = rv_xor | xori;
+assign o_alu_inst_bus[`CORE_ALU_INST_CMP_U]   = rv_sltu | rv_sltiu | rv_bltu | rv_bgeu;
+assign o_alu_inst_bus[`CORE_ALU_INST_XOR]     = rv_xor | rv_xori;
 assign o_alu_inst_bus[`CORE_ALU_INST_SLL]     = rv_sll | rv_slli;
 assign o_alu_inst_bus[`CORE_ALU_INST_SRL]     = rv_srl | rv_srli;
 assign o_alu_inst_bus[`CORE_ALU_INST_SRA]     = rv_sra | rv_srai;
@@ -162,11 +162,11 @@ assign o_lsu_inst_bus[`CORE_LSU_INST_LU]      = rv_lbu | rv_lhu;
 //mul inst:reserve
 
 //imm decode
-wire [`CORE_XLEN-1:0] imm_i = {{20{inst[31]}},inst[31:20]};
-wire [`CORE_XLEN-1:0] imm_s = {{20{inst[31]}},inst[31:25],inst[11:7]};
-wire [`CORE_XLEN-1:0] imm_b = {{20{inst[31]}},inst[7],inst[30:25],inst[11:8], 1'b0};
-wire [`CORE_XLEN-1:0] imm_u = {inst[31:12],12'b0};
-wire [`CORE_XLEN-1:0] imm_j = {{12{inst[31]}},inst[19:12],inst[20],inst[30:21], 1'b0};
+wire [`CORE_XLEN-1:0] imm_i = {{20{i_inst[31]}},i_inst[31:20]};
+wire [`CORE_XLEN-1:0] imm_s = {{20{i_inst[31]}},i_inst[31:25],i_inst[11:7]};
+wire [`CORE_XLEN-1:0] imm_b = {{20{i_inst[31]}},i_inst[7],i_inst[30:25],i_inst[11:8], 1'b0};
+wire [`CORE_XLEN-1:0] imm_u = {i_inst[31:12],12'b0};
+wire [`CORE_XLEN-1:0] imm_j = {{12{i_inst[31]}},i_inst[19:12],i_inst[20],i_inst[30:21], 1'b0};
 
 //imm sel signal
 wire sel_imm_i = opcode_jalr | opcode_load | opcode_alu_i | opcode_fence | opcode_system;

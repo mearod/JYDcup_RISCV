@@ -7,7 +7,7 @@ module gnrl_dfflr #(
     input     rst_n,
 
     input     [WIDTH-1:0] din,
-    output    [WIDTH-1:0] dout,
+    output    reg [WIDTH-1:0] dout,
     input     wen
 );
 
@@ -28,7 +28,7 @@ module gnrl_dffl #(
     input     clk,
     
     input     [WIDTH-1:0] din,
-    output    [WIDTH-1:0] dout,
+    output    reg [WIDTH-1:0] dout,
     input     wen
 );
 
@@ -49,7 +49,7 @@ module gnrl_dffr #(
     input     rst_n,
     
     input     [WIDTH-1:0] din,
-    output    [WIDTH-1:0] dout
+    output    reg [WIDTH-1:0] dout
 );
 
 always @(posedge clk or negedge rst_n) 

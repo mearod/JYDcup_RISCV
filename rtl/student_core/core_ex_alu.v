@@ -35,7 +35,7 @@ wire unsigned_comp_less =
 wire sub_flag = alu_inst_bus[`CORE_ALU_INST_SUB];
 wire [`CORE_XLEN-1:0] op2_xor_mask = {`CORE_XLEN{sub_flag}};
 wire [`CORE_XLEN-1:0] op2_modified = op2 ^ op2_xor_mask;
-wire adder_result = op2 + op2_modified + {`CORE_XLEN-1'h0,sub_flag};
+wire [`CORE_XLEN-1:0]adder_result = op2 + op2_modified + {{(`CORE_XLEN-1){1'b0}},sub_flag};
 /////////
 
 

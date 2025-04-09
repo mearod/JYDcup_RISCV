@@ -67,7 +67,7 @@ core_id_idu u_core_id_idu(
     .i_branch_predict  	(ifu_branch_jump_predict   ),
     .rd_idx_ex_forward 	(rd_idx_ex_forward  ),
     .rd_wen_ex_forward 	(rd_wen_ex_forward  ),
-    .i_pipe_flush_req  	(i_pipe_flush_req   ),
+    .i_pipe_flush_req  	(cmt_pipeline_flush_req   ),
     .o_rs1_dat         	(idu_rs1_dat          ),
     .o_rs2_dat         	(idu_rs2_dat          ),
     .o_pc              	(idu_pc               ),

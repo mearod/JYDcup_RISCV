@@ -101,7 +101,7 @@ gnrl_dfflr #(`CORE_LSU_INST_WIDTH,`CORE_LSU_INST_WIDTH'b0)lsu_inst_bus_reg(
     .wen   	(ready_in    )
 );
 
-wire [`CORE_LSU_INST_WIDTH-1:0] mem_addr;
+wire [`CORE_XLEN-1:0] mem_addr;
 gnrl_dfflr #(`CORE_XLEN,`CORE_XLEN'b0)mem_addr_reg(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),

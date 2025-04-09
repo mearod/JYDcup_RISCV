@@ -64,8 +64,8 @@ gnrl_dffr #(1, 1'b0) idu_valid_out(
 
 
 ////pipeline regs//////
-wire [`CORE_PC_WIDTH-1:0]branch_predict_reg;
-gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)branch_predict_id(
+wire branch_predict_reg;
+gnrl_dfflr #(1,1'b0)branch_predict_id(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
     .din   	(i_branch_predict    ),

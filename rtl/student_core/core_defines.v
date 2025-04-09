@@ -4,6 +4,8 @@
 `define CORE_INST_WIDTH 32
 `define CORE_PC_WIDTH 32
 
+`define CORE_XLEN_SUB1 31
+
 //ex_regfile
 `define CORE_RFIDX_WIDTH 5
 `define CORE_RF_NUM 32

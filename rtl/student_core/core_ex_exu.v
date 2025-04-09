@@ -47,7 +47,7 @@ wire pipeline_update = ready_in & valid_in;
 assign valid_out     = wb_en;
 
 wire ready_in_tmp;
-wire ready_in_next   = lsu_valid | ~valid_in & ready_in;
+wire ready_in_next   = lsu_valid_out | ~valid_in & ready_in;
 assign ready_in      = ~lsu_used | ready_in_tmp;
 
 wire flush_state;
@@ -71,7 +71,7 @@ gnrl_dffr #(1, 1'b0) exu_flush_state(
 
 //pipeline regs//////////
 wire branch_predict_reg;
-gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)branch_predict_ex(
+gnrl_dfflr #(1,1'b0)branch_predict_ex(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
     .din   	(i_branch_predict    ),
@@ -79,7 +79,7 @@ gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)branch_predict_ex(
     .wen   	(pipeline_update    )
 );
 
-wire [`CORE_PC_WIDTH-1:0]pc;
+wire [`CORE_PC_WIDTH-1:0]pc_reg;
 gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)pc_ex(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
@@ -88,7 +88,7 @@ gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)pc_ex(
     .wen   	(pipeline_update    )
 );
 
-wire rs1_dat_reg;
+wire [`CORE_XLEN-1:0]rs1_dat_reg;
 gnrl_dffl #(`CORE_XLEN)rs1_dat_ex(
     .clk   	(clk    ),
     .din   	(i_rs1_dat    ),
@@ -96,7 +96,7 @@ gnrl_dffl #(`CORE_XLEN)rs1_dat_ex(
     .wen   	(pipeline_update    )
 );
 
-wire rs2_dat_reg;
+wire [`CORE_XLEN-1:0]rs2_dat_reg;
 gnrl_dffl #(`CORE_XLEN)rs2_dat_ex(
     .clk   	(clk    ),
     .din   	(i_rs1_dat    ),
@@ -113,7 +113,7 @@ gnrl_dfflr #(1,1'b0)rd_wen_ex(
     .wen   	(pipeline_update    )
 );
 
-wire rs1_idx_reg;
+wire [`CORE_RFIDX_WIDTH-1:0]rs1_idx_reg;
 gnrl_dfflr #(`CORE_RFIDX_WIDTH,`CORE_RFIDX_WIDTH'b0)rs1_idx_ex(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
@@ -122,7 +122,7 @@ gnrl_dfflr #(`CORE_RFIDX_WIDTH,`CORE_RFIDX_WIDTH'b0)rs1_idx_ex(
     .wen   	(pipeline_update    )
 );
 
-wire rs2_idx_reg;
+wire [`CORE_RFIDX_WIDTH-1:0]rs2_idx_reg;
 gnrl_dfflr #(`CORE_RFIDX_WIDTH,`CORE_RFIDX_WIDTH'b0)rs2_idx_ex(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
@@ -131,16 +131,16 @@ gnrl_dfflr #(`CORE_RFIDX_WIDTH,`CORE_RFIDX_WIDTH'b0)rs2_idx_ex(
     .wen   	(pipeline_update    )
 );
 
-wire rd_idx_reg;
+wire [`CORE_RFIDX_WIDTH-1:0]rd_idx_reg;
 gnrl_dfflr #(`CORE_RFIDX_WIDTH,`CORE_RFIDX_WIDTH'b0)rd_idx_ex(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
-    .din   	(i_i_rd_idx    ),
+    .din   	(i_rd_idx    ),
     .dout  	(rd_idx_reg   ),
     .wen   	(pipeline_update    )
 );
 
-wire imm_reg;
+wire [`CORE_XLEN-1:0]imm_reg;
 gnrl_dfflr #(`CORE_XLEN,`CORE_XLEN'b0)imm_ex(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
@@ -149,7 +149,7 @@ gnrl_dfflr #(`CORE_XLEN,`CORE_XLEN'b0)imm_ex(
     .wen   	(pipeline_update    )
 );
 
-wire bj_dec_inst_bus_reg;
+wire [`CORE_BJ_DEC_INST_WIDTH-1:0]bj_dec_inst_bus_reg;
 gnrl_dfflr #(`CORE_BJ_DEC_INST_WIDTH,`CORE_BJ_DEC_INST_WIDTH'b0)bj_dec_inst_bus_ex(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
@@ -158,8 +158,8 @@ gnrl_dfflr #(`CORE_BJ_DEC_INST_WIDTH,`CORE_BJ_DEC_INST_WIDTH'b0)bj_dec_inst_bus_
     .wen   	(pipeline_update    )
 );
 
-wire alu_inst_bus_reg;
-gnrl_dfflr #(`CORE_BJ_DEC_INST_WIDTH,`CORE_BJ_DEC_INST_WIDTH'b0)alu_inst_bus_ex(
+wire [`CORE_ALU_INST_WIDTH-1:0]alu_inst_bus_reg;
+gnrl_dfflr #(`CORE_ALU_INST_WIDTH,`CORE_ALU_INST_WIDTH'b0)alu_inst_bus_ex(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
     .din   	(i_alu_inst_bus    ),
@@ -167,8 +167,8 @@ gnrl_dfflr #(`CORE_BJ_DEC_INST_WIDTH,`CORE_BJ_DEC_INST_WIDTH'b0)alu_inst_bus_ex(
     .wen   	(pipeline_update    )
 );
 
-wire lsu_inst_bus_reg;
-gnrl_dfflr #(`CORE_BJ_DEC_INST_WIDTH,`CORE_BJ_DEC_INST_WIDTH'b0)lsu_inst_bus_ex(
+wire [`CORE_LSU_INST_WIDTH-1:0]lsu_inst_bus_reg;
+gnrl_dfflr #(`CORE_LSU_INST_WIDTH,`CORE_LSU_INST_WIDTH'b0)lsu_inst_bus_ex(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
     .din   	(i_lsu_inst_bus    ),
@@ -248,9 +248,6 @@ core_ex_commit u_core_ex_commit(
 
 
 // output declaration of module core_ex_wbu
-wire wb_en;
-wire [`CORE_XLEN-1:0] wb_data;
-
 core_ex_wbu u_core_ex_wbu(
     .rd_wen     	(rd_wen_reg      ),
     .lsu_used   	(lsu_used    ),

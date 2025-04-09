@@ -9,7 +9,7 @@ module core_if_pre_decode(
     output  [`CORE_XLEN-1:0] bj_imm
 );
 
-wire opcode  = i_inst[6:0];
+wire [6:0]opcode  = i_inst[6:0];
 
 //opcode classify ///////////
 wire opcode_1_0_11  = (opcode[1:0] == 2'b11);
@@ -21,14 +21,14 @@ assign flag_branch  = (opcode[6:2] == 5'b11000) & opcode_1_0_11;
 
 
 //imm decode
-wire [`CORE_XLEN-1:0] imm_i = {{20{inst[31]}},inst[31:20]};
-wire [`CORE_XLEN-1:0] imm_b = {{20{inst[31]}},inst[7],inst[30:25],inst[11:8], 1'b0};
-wire [`CORE_XLEN-1:0] imm_j = {{12{inst[31]}},inst[19:12],inst[20],inst[30:21], 1'b0};
+wire [`CORE_XLEN-1:0] imm_i = {{20{i_inst[31]}},i_inst[31:20]};
+wire [`CORE_XLEN-1:0] imm_b = {{20{i_inst[31]}},i_inst[7],i_inst[30:25],i_inst[11:8], 1'b0};
+wire [`CORE_XLEN-1:0] imm_j = {{12{i_inst[31]}},i_inst[19:12],i_inst[20],i_inst[30:21], 1'b0};
 
 //imm sel signal
-wire sel_imm_i = opcode_jalr;
-wire sel_imm_b = opcode_branch;
-wire sel_imm_j = opcode_jal;
+wire sel_imm_i = flag_jalr;
+wire sel_imm_b = flag_branch;
+wire sel_imm_j = flag_jal;
 
 //final assign
 assign bj_imm = 
