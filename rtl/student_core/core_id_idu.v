@@ -18,9 +18,9 @@ module core_id_idu(
     input   i_branch_predict,
 
     input   [`CORE_RFIDX_WIDTH-1:0] rd_idx_ex_forward,
-		input   rd_wen_ex_forward,
+	input   rd_wen_ex_forward,
 
-		input   i_pipe_flush_req,
+	input   i_pipe_flush_req,
 
     output  [`CORE_XLEN-1:0] o_rs1_dat,
     output  [`CORE_XLEN-1:0] o_rs2_dat,

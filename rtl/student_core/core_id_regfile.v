@@ -1,6 +1,6 @@
 `include "core_defines.v"
 //`include "../general/gnrl_dffs.v"
-module core_ex_regfile(
+module core_id_regfile(
     input   clk,
     input   rst_n,
 

@@ -32,21 +32,23 @@ module core_ex_exu(
     output  [`CORE_RFIDX_WIDTH-1:0] i_rs1_idx,
     output  [`CORE_RFIDX_WIDTH-1:0] i_rs2_idx,
 
-		output  cmt_pipeline_flush_req,
+	output  cmt_pipeline_flush_req,
     output  [`CORE_PC_WIDTH-1:0] cmt_flush_pc,
 
     output  wb_en,
-    output  [`CORE_XLEN-1:0] wb_data
+    output  [`CORE_RFIDX_WIDTH-1:0] wb_idx,
+    output  [`CORE_XLEN-1:0] wb_data,
 
 
-    output  [`CORE_RFIDX_WIDTH-1:0] rd_idx_forward,
-
-    output  [`CORE_XLEN-1:0] rd_dat_forward
+    output  [`CORE_RFIDX_WIDTH-1:0] rd_idx_ex_forward,
+    output  rd_wen_ex_forward,
+    output  [`CORE_XLEN-1:0] rd_dat_ex_forward
 );
 
 //pipeline related////
 wire pipeline_update = ready_in & valid_in;
 assign valid_out     = wb_en;
+
 wire ready_in_tmp;
 wire ready_in_next   = lsu_valid | ~valid_in & ready_in;
 assign ready_in      = ~lsu_used | ready_in_tmp;
@@ -59,14 +61,14 @@ gnrl_dffr #(1, 1'b1) exu_ready_in(
     .clk   	(clk     ),
     .rst_n 	(rst_n   ),
     .din   	(ready_in_next),
-    .dout  	(ready_in_tmp ),
+    .dout  	(ready_in_tmp )
 );
 
 gnrl_dffr #(1, 1'b0) exu_flush_state(
     .clk   	(clk     ),
     .rst_n 	(rst_n   ),
     .din   	(flush_state_next),
-    .dout  	(flush_state),
+    .dout  	(flush_state)
 );
 /////////////////////
 
@@ -267,8 +269,11 @@ core_ex_wbu u_core_ex_wbu(
 wire    lsu_used = i_lsu_inst_bus[`CORE_LSU_INST_LOAD] | i_lsu_inst_bus[`CORE_LSU_INST_STORE];
 
 ///output assign//////
-assign rd_idx_forward  = rd_idx_reg;
+assign wb_idx = rd_idx_reg;
 
-assign rd_dat_forward  = wb_data;
+assign rd_idx_ex_forward  = rd_idx_reg;
+assign rd_wen_ex_forward = rd_wen_reg;
+assign rd_dat_ex_forward  = wb_data;
 /////////////////////
+
 endmodule
