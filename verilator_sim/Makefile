@@ -7,6 +7,7 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign \
 										fast --x-initial fast --noassert --autoflush \
 										--timescale "1ns/1ns" --no-timing --trace-fst
 
+PROJECT_HOME = $(abspath ../)
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 IMG ?= 
@@ -29,7 +30,7 @@ VER_INCFLAGS = $(addprefix -I, $(VER_INC_PATH))
 CXXFLAGS += $(CXX_INCFLAGS) \
 						-DTOP_NAME=\"V$(TOPNAME)\"
 VERILATOR_CFLAGS += $(VER_INCFLAGS)
-DIFF_SO = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
+DIFF_SO = $(PROJECT_HOME)/utils/difftest/riscv32-nemu-interpreter-so
 LDFLAGS += -lreadline
 ifneq ($(IMG),)
 override ARGS += -g $(IMG)

@@ -59,7 +59,6 @@ static void checkregs(uint32_t *ref, uint32_t ref_pc, uint32_t pc) {
 		if (ref[i] != cpu_gpr(i)) {
 			trigger_difftest = 1;
 			print_difftest_reg(0, i);
-			printf("%x, %x\n", cpu_gpr(i), ref[i]);
 		}
 	}
 	//if (pc != ref_pc) trigger_difftest = 1;
