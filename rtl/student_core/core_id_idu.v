@@ -41,7 +41,9 @@ module core_id_idu(
     output  [`CORE_ALU_INST_WIDTH-1:0] o_alu_inst_bus,
     output  [`CORE_LSU_INST_WIDTH-1:0] o_lsu_inst_bus,
 
-		output  rv_ebreak_sim
+    input   exu_busy,
+
+	output  rv_ebreak_sim
 );
 
 
@@ -50,7 +52,7 @@ wire pipeline_update = valid_in & ready_in;
 wire valid_out_next  = (pipeline_update | ~ready_out & valid_out) & ~i_pipe_flush_req;
 wire raw_conflict    = (o_rs1_ren & (o_rs1_idx == rd_idx_ex_forward) 
                      | o_rs2_ren & (o_rs2_idx == rd_idx_ex_forward))
-										 & (rd_idx_ex_forward != 0) & rd_wen_ex_forward & ~ready_out;
+										 & (rd_idx_ex_forward != 0) & rd_wen_ex_forward & (~ready_out | exu_busy);
 assign ready_in      = ~raw_conflict & (ready_out | ~valid_out);
 
 wire valid_out_tmp;

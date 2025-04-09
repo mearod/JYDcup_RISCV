@@ -1,4 +1,5 @@
-`define DPI_C
+`include "core_defines.v"
+
 
 `ifdef DPI_C
 import "DPI-C" function int pmem_read(input int raddr);

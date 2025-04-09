@@ -83,7 +83,8 @@ core_id_idu u_core_id_idu(
     .o_bj_dec_inst_bus 	(idu_bj_dec_inst_bus  ),
     .o_alu_inst_bus    	(idu_alu_inst_bus     ),
     .o_lsu_inst_bus    	(idu_lsu_inst_bus     ),
-		.rv_ebreak_sim      (rv_ebreak_sim        )
+    .exu_busy           (exu_busy),
+	.rv_ebreak_sim      (rv_ebreak_sim        )
 );
 
 
@@ -114,6 +115,7 @@ wire [`CORE_XLEN-1:0] wb_data;
 wire [`CORE_RFIDX_WIDTH-1:0] rd_idx_ex_forward;
 wire rd_wen_ex_forward;
 wire [`CORE_XLEN-1:0] rd_dat_ex_forward;
+wire exu_busy;
 
 core_ex_exu u_core_ex_exu(
     .clk                    	(clk                     ),

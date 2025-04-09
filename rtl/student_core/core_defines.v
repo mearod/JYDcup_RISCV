@@ -50,3 +50,6 @@
 //LSU
 `define CORE_LSU_WMASK_WIDTH 8
 
+
+//DPI_C
+`define DPI_C
