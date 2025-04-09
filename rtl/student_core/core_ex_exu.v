@@ -29,9 +29,10 @@ module core_ex_exu(
     input   [`CORE_ALU_INST_WIDTH-1:0] i_alu_inst_bus,
     input   [`CORE_LSU_INST_WIDTH-1:0] i_lsu_inst_bus,
 
-    output   [`CORE_RFIDX_WIDTH-1:0] i_rs1_idx,
-    output   [`CORE_RFIDX_WIDTH-1:0] i_rs2_idx,
+    output  [`CORE_RFIDX_WIDTH-1:0] i_rs1_idx,
+    output  [`CORE_RFIDX_WIDTH-1:0] i_rs2_idx,
 
+		output  cmt_pipeline_flush_req,
     output  [`CORE_PC_WIDTH-1:0] cmt_flush_pc,
 
     output  wb_en,
@@ -46,13 +47,26 @@ module core_ex_exu(
 //pipeline related////
 wire pipeline_update = ready_in & valid_in;
 assign valid_out     = wb_en;
-wire ready_in_next   = wb_en | ~valid_in & ready_in;
+wire ready_in_tmp;
+wire ready_in_next   = lsu_valid | ~valid_in & ready_in;
+assign ready_in      = ~lsu_used | ready_in_tmp;
+
+wire flush_state;
+wire flush_state_next = valid_in & ready_in;
+assign cmt_pipeline_flush_req = cmt_pipeline_flush_req_tmp & flush_state;
 
 gnrl_dffr #(1, 1'b1) exu_ready_in(
     .clk   	(clk     ),
     .rst_n 	(rst_n   ),
     .din   	(ready_in_next),
-    .dout  	(ready_in     ),
+    .dout  	(ready_in_tmp ),
+);
+
+gnrl_dffr #(1, 1'b0) exu_flush_state(
+    .clk   	(clk     ),
+    .rst_n 	(rst_n   ),
+    .din   	(flush_state_next),
+    .dout  	(flush_state),
 );
 /////////////////////
 
@@ -222,10 +236,11 @@ core_ex_lsu_dpic_test u_core_ex_lsu_dpic_test(
 
 
 //pc_commit///////////
+wire cmt_pipeline_flush_req_tmp;
 core_ex_commit u_core_ex_commit(
     .branch_predict     	(branch_predict_reg      ),
     .branch_jump        	(branch_jump         ),
-    .pipeline_flush_req 	(cmt_pipeline_flush_req  ),
+    .pipeline_flush_req 	(cmt_pipeline_flush_req_tmp  ),
     .pc                 	(pc_reg                  ),
     .bj_pc              	(bj_pc               ),
     .flush_pc           	(cmt_flush_pc            )

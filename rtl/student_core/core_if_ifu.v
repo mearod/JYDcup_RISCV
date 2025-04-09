@@ -21,7 +21,7 @@ module core_if_ifu(
 
 //pipeline related////
 wire pipeline_update = valid_out & ready_out;
-assign valid_out     = 1'b1;//rvalid; //TODO: rvalid not defined
+assign valid_out     = ~i_pipe_flush_req & 1'b1; //TODO: rvalid not defined, use 1'b1.
 assign ready_in      = ready_out | ~valid_out;
 /////////////////////
 
