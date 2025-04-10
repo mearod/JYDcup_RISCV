@@ -14,7 +14,9 @@ module core_ex_alu(
 );
 
 //op select///
-wire [`CORE_XLEN-1:0] op1 = alu_inst_bus[`CORE_ALU_INST_OP1_PC] ? pc : rs1;
+wire [`CORE_XLEN-1:0] op1 = alu_inst_bus[`CORE_ALU_INST_OP1_PC] ? pc : 
+                            alu_inst_bus[`CORE_ALU_INST_OP1_0] ? 0 :
+                            rs1;
 wire [`CORE_XLEN-1:0] op2 = alu_inst_bus[`CORE_ALU_INST_OP2_IMM] ? imm :
                             alu_inst_bus[`CORE_ALU_INST_OP1_PC] ? `CORE_XLEN'h4 : rs2;
 /////////////
@@ -40,10 +42,10 @@ wire [`CORE_XLEN-1:0]adder_result = op1 + op2_modified + {{(`CORE_XLEN-1){1'b0}}
 
 
 //////shifter/////
-wire [4:0]shamt = alu_inst_bus[`CORE_ALU_INST_RS2ADR];
+wire [4:0]shamt = op2[4:0];
 wire [`CORE_XLEN-1:0]L_L_shift  = op1 << shamt;
 wire [`CORE_XLEN-1:0]R_L_shift  = op1 >> shamt;
-wire [`CORE_XLEN-1:0]R_A_shift  = op1 >>> shamt;
+wire [`CORE_XLEN-1:0]R_A_shift  = $signed(op1) >>> shamt;
 /////////////
 
 

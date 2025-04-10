@@ -225,6 +225,16 @@ core_ex_bj_dec u_core_ex_bj_dec(
 );
 
 //lsu related/////////////////
+
+wire lsu_valid_in_next = pipeline_update | (~lsu_ready_in & lsu_valid_in);
+wire lsu_valid_in;
+gnrl_dffr u_gnrl_dffr(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(lsu_valid_in_next    ),
+    .dout  	(lsu_valid_in   )
+);
+
 // output declaration of module core_ex_lsu_dpic_test
 wire lsu_valid_out;
 wire lsu_ready_in;
@@ -235,11 +245,12 @@ wire [`CORE_XLEN-1:0] lsu_result;
 core_ex_lsu_dpic_test u_core_ex_lsu_dpic_test(
     .clk                	(clk                 ),
     .rst_n              	(rst_n               ),
+    .valid_in               (lsu_valid_in),
     .valid_out          	(lsu_valid_out           ),
     .ready_in           	(lsu_ready_in            ),
     .i_lsu_inst_bus     	(lsu_inst_bus_reg      ),
     .i_mem_addr         	(alu_result          ),
-    .i_write_data       	(alu_result        ),
+    .i_write_data       	(rs2_dat_reg        ),
     .wmask              	(wmask               ),
     .flag_unalign_write 	(flag_unalign_write  ),
     .read_data          	(lsu_result           )

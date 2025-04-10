@@ -150,15 +150,17 @@ assign o_alu_inst_bus[`CORE_ALU_INST_SRA]     = rv_sra | rv_srai;
 assign o_alu_inst_bus[`CORE_ALU_INST_OR ]     = rv_or  | rv_ori;
 assign o_alu_inst_bus[`CORE_ALU_INST_AND]     = rv_and | rv_andi;
 assign o_alu_inst_bus[`CORE_ALU_INST_OP1_PC]  = rv_jal | rv_jalr | rv_auipc; //is op1 pc?
+assign o_alu_inst_bus[`CORE_ALU_INST_OP1_0]   = rv_lui ;
 assign o_alu_inst_bus[`CORE_ALU_INST_OP2_IMM] = need_imm & ~rv_jal & ~rv_jalr & ~opcode_branch; //is op2 imm?
 assign o_alu_inst_bus[`CORE_ALU_INST_RS2ADR]  = rs2; //rs2 address
+
 ///////////
 
 //lsu inst
 assign o_lsu_inst_bus[`CORE_LSU_INST_LOAD]    = opcode_load;
 assign o_lsu_inst_bus[`CORE_LSU_INST_STORE]   = opcode_store;
-assign o_lsu_inst_bus[`CORE_LSU_INST_B]       = rv_lb | rv_sb;
-assign o_lsu_inst_bus[`CORE_LSU_INST_H]       = rv_lh | rv_sh;
+assign o_lsu_inst_bus[`CORE_LSU_INST_B]       = rv_lb | rv_sb | rv_lbu;
+assign o_lsu_inst_bus[`CORE_LSU_INST_H]       = rv_lh | rv_sh | rv_lhu;
 assign o_lsu_inst_bus[`CORE_LSU_INST_W]       = rv_lw | rv_sw;
 assign o_lsu_inst_bus[`CORE_LSU_INST_LU]      = rv_lbu | rv_lhu;
 ///////////

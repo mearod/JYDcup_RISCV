@@ -6,7 +6,7 @@
 #include <readline/history.h>
 
 int batch_mode = 0;
-int wave_trace = 1;
+int wave_trace = 0;
 int monitor_start = 0;
 static int cmd_help(char *args);
 

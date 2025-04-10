@@ -4,6 +4,7 @@ module core_ex_lsu_dpic_test(
     input   clk,
     input   rst_n,
 
+    input   valid_in,
     output  valid_out,
     output  ready_in,
 
@@ -34,7 +35,8 @@ gnrl_dffr #(1,1'b0)isu_state_reg(
 assign isu_state_nxt = 
     valid_out ? 
         ISU_IDLE:
-    ready_in & (lsu_inst_bus[`CORE_LSU_INST_LOAD] | lsu_inst_bus[`CORE_LSU_INST_STORE]) ?
+    ready_in & valid_in & 
+    (i_lsu_inst_bus[`CORE_LSU_INST_LOAD] | i_lsu_inst_bus[`CORE_LSU_INST_STORE]) ?
         ISU_WORK:
         isu_state
 ;

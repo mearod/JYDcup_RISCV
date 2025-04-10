@@ -20,13 +20,21 @@ wire [`CORE_XLEN-1:0]addr10_aligned = {i_write_data[15:0],16'b0};
 wire [`CORE_XLEN-1:0]addr11_aligned = {i_write_data[7:0],24'b0};
 /////////
 
-/////read align
-wire [`CORE_XLEN-1:0]lb_aligned   = {{24{i_read_data[7]}},i_read_data[7:0]};
-wire [`CORE_XLEN-1:0]lh_aligned   = {{16{i_read_data[15]}},i_read_data[15:0]};
-wire [`CORE_XLEN-1:0]lw_aligned   = i_read_data;
-wire [`CORE_XLEN-1:0]lbu_aligned  = {24'b0,i_read_data[7:0]};
-wire [`CORE_XLEN-1:0]lhu_aligned  = {16'b0,i_read_data[15:0]};
-//////////
+/////read align///
+wire [`CORE_XLEN-1:0]read_data_shift;
+
+assign read_data_shift  =
+      ({`CORE_XLEN{low_addr_00}} & i_read_data)
+    | ({`CORE_XLEN{low_addr_01}} & {8'b0,i_read_data[31:8]})
+    | ({`CORE_XLEN{low_addr_10}} & {16'b0,i_read_data[31:16]})
+    | ({`CORE_XLEN{low_addr_11}} & {24'b0,i_read_data[31:24]});
+
+wire [`CORE_XLEN-1:0]lb_aligned   = {{24{read_data_shift[7]}},read_data_shift[7:0]};
+wire [`CORE_XLEN-1:0]lh_aligned   = {{16{read_data_shift[15]}},read_data_shift[15:0]};
+wire [`CORE_XLEN-1:0]lw_aligned   = read_data_shift;
+wire [`CORE_XLEN-1:0]lbu_aligned  = {24'b0,read_data_shift[7:0]};
+wire [`CORE_XLEN-1:0]lhu_aligned  = {16'b0,read_data_shift[15:0]};
+/////////////
 
 ////low addr reuse signal
 wire low_addr_00 = low_addr[1:0] == 2'b00;

@@ -10,7 +10,7 @@
 `define CORE_RF_NUM 32
 
 //alu_inst
-`define CORE_ALU_INST_WIDTH 17
+`define CORE_ALU_INST_WIDTH 18
 `define CORE_ALU_INST_ADD 0
 `define CORE_ALU_INST_SUB 1
 `define CORE_ALU_INST_CMP 2
@@ -22,8 +22,11 @@
 `define CORE_ALU_INST_OR 8
 `define CORE_ALU_INST_AND 9
 `define CORE_ALU_INST_OP1_PC 10
-`define CORE_ALU_INST_OP2_IMM 11
-`define CORE_ALU_INST_RS2ADR 16:12
+`define CORE_ALU_INST_OP1_0 11
+`define CORE_ALU_INST_OP2_IMM 12
+`define CORE_ALU_INST_RS2ADR 17:13
+
+
 
 //bj_dec inst
 `define CORE_BJ_DEC_INST_WIDTH 6
