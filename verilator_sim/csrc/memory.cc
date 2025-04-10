@@ -27,6 +27,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 		reg_display();
 		assert(0);
 	}
+	//printf("write address: %x, data: %x\n", waddr, wdata);
 
 	if (wmask & 0x1) haddr[0] = wdata & 0xff;
 	if (wmask & 0x2) haddr[1] = (wdata >> 8) & 0xff;
@@ -42,6 +43,7 @@ extern "C" int pmem_read(int raddr) {
 		reg_display();
 		assert(0);
 	}
+	//printf("read  address: %x, data: %x\n", raddr, *(int *)haddr);
 
 	return *(int *)haddr;
 }

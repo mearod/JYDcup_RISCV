@@ -21,7 +21,7 @@ wire [`CORE_XLEN-1:0] op2 = alu_inst_bus[`CORE_ALU_INST_OP2_IMM] ? imm :
 
 
 //comparetor//
-wire low_comp = op1[`CORE_XLEN-2:0] < op1[`CORE_XLEN-2:0]; 
+wire low_comp = op1[`CORE_XLEN-2:0] < op2[`CORE_XLEN-2:0]; 
 
 wire signed_comp_less = 
     ( (~(op1[`CORE_XLEN-1]^op2[`CORE_XLEN-1])) & low_comp) | (op1[`CORE_XLEN-1] & ~op2[`CORE_XLEN-1]);
@@ -56,8 +56,8 @@ wire [`CORE_XLEN-1:0]xor_result = op1 ^ op2;
 ///alu result mux
 assign alu_result = 
       ({`CORE_XLEN{alu_inst_bus[`CORE_ALU_INST_ADD] | alu_inst_bus[`CORE_ALU_INST_SUB]}} & adder_result) 
-    | ({`CORE_XLEN{alu_inst_bus[`CORE_ALU_INST_CMP]}} & {`CORE_XLEN{signed_comp_less}})
-    | ({`CORE_XLEN{alu_inst_bus[`CORE_ALU_INST_CMP_U]}} & {`CORE_XLEN{unsigned_comp_less}})
+    | ({`CORE_XLEN{alu_inst_bus[`CORE_ALU_INST_CMP]}} & {{(`CORE_XLEN-1){1'b0}}, {signed_comp_less}})
+    | ({`CORE_XLEN{alu_inst_bus[`CORE_ALU_INST_CMP_U]}} & {{(`CORE_XLEN-1){1'b0}}, {unsigned_comp_less}})
     | ({`CORE_XLEN{alu_inst_bus[`CORE_ALU_INST_SLL]}} & L_L_shift)
     | ({`CORE_XLEN{alu_inst_bus[`CORE_ALU_INST_SRL]}} & R_L_shift)
     | ({`CORE_XLEN{alu_inst_bus[`CORE_ALU_INST_SRA]}} & R_A_shift)

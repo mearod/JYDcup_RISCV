@@ -52,14 +52,15 @@ wire pipeline_update = ready_in & valid_in;
 assign valid_out     = wb_en;
 
 wire ready_in_tmp;
-wire ready_in_next   = lsu_valid_out | ~valid_in & ready_in;
+wire ready_in_next   = lsu_used & lsu_valid_out 
+                     | (~(valid_in & ready_in) & ready_in_tmp);
 assign ready_in      = ~lsu_used | ready_in_tmp;
 
 wire flush_state;
 wire flush_state_next = pipeline_update;
 assign cmt_pipeline_flush_req = cmt_pipeline_flush_req_tmp & flush_state;
 
-wire exu_busy_next   = pipeline_update | ~wb_en;
+wire exu_busy_next   = pipeline_update | ~difftest_end;
 
 gnrl_dffr #(1, 1'b1) exu_ready_in(
     .clk   	(clk     ),

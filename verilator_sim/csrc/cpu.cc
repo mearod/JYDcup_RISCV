@@ -52,6 +52,9 @@ void cpu_exec(unsigned long n) {
 	if (trigger_difftest) {
 		reg_display();
 		printf("\33[1;31mdifftest ABORT\33[1;0m at pc = %#x\n", signal(ifu_pc));
+		one_cycle();
+		one_cycle();
+		one_cycle();
 		return;
 	}
 	if (!top->rv_ebreak_sim) return;

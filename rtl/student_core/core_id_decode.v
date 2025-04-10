@@ -150,7 +150,7 @@ assign o_alu_inst_bus[`CORE_ALU_INST_SRA]     = rv_sra | rv_srai;
 assign o_alu_inst_bus[`CORE_ALU_INST_OR ]     = rv_or  | rv_ori;
 assign o_alu_inst_bus[`CORE_ALU_INST_AND]     = rv_and | rv_andi;
 assign o_alu_inst_bus[`CORE_ALU_INST_OP1_PC]  = rv_jal | rv_jalr | rv_auipc; //is op1 pc?
-assign o_alu_inst_bus[`CORE_ALU_INST_OP2_IMM] = need_imm & ~rv_jal & ~rv_jalr; //is op2 imm?
+assign o_alu_inst_bus[`CORE_ALU_INST_OP2_IMM] = need_imm & ~rv_jal & ~rv_jalr & ~opcode_branch; //is op2 imm?
 assign o_alu_inst_bus[`CORE_ALU_INST_RS2ADR]  = rs2; //rs2 address
 ///////////
 
