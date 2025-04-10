@@ -4,7 +4,7 @@ module core_if_pc(
     input   clk,
     input   rst_n,
 
-    input   pc_update_en,
+    input   pipeline_update,
 
     input   pipe_flush_req,
     input   bju_pc_bj_predict,
@@ -18,7 +18,7 @@ module core_if_pc(
 
 //pc reg////////
 wire [`CORE_PC_WIDTH-1:0]pc_next;
-
+wire pc_update_en = pipeline_update | pipe_flush_req;
 gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_RESET_VALUE)pc(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),

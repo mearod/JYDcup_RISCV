@@ -7,7 +7,7 @@ module core_cpu(
 		output  inst_end
 );
 
-assign inst_end = wb_en & exu_busy;
+assign inst_end = difftest_end & exu_busy;
 
 // output declaration of module core_ifu_rom_dpic_test
 wire [`CORE_INST_WIDTH-1:0] rom_inst;
@@ -120,7 +120,13 @@ wire rd_wen_ex_forward;
 wire [`CORE_XLEN-1:0] rd_dat_ex_forward;
 wire exu_busy;
 
+`ifdef DPI_C
+wire difftest_end;    
+`endif
 core_ex_exu u_core_ex_exu(
+    `ifdef DPI_C
+    .difftest_end               (difftest_end),
+    `endif
     .clk                    	(clk                       ),
     .rst_n                  	(rst_n                     ),
     .valid_in               	(valid_id_ex               ),

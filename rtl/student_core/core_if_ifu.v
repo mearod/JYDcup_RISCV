@@ -62,7 +62,7 @@ wire branch_jump_predict;
 core_if_pc u_core_if_pc(
     .clk                 	(clk                  ),
     .rst_n               	(rst_n                ),
-    .pc_update_en        	(pipeline_update      ),
+    .pipeline_update        (pipeline_update      ),
     .pipe_flush_req      	(i_pipe_flush_req       ),
     .bju_pc_bj_predict   	(bju_pc_bj_predict    ),
     .bju_pc_offset       	(bju_pc_offset        ),

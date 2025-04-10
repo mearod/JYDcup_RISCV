@@ -1,6 +1,10 @@
 `include "core_defines.v"
 
 module core_ex_exu(
+    `ifdef DPI_C
+        output difftest_end,
+    `endif
+
     input clk,
     input rst_n,
 
@@ -259,6 +263,9 @@ core_ex_commit u_core_ex_commit(
 
 // output declaration of module core_ex_wbu
 core_ex_wbu u_core_ex_wbu(
+    `ifdef DPI_C
+    .difftest_end   (difftest_end),
+    `endif
     .rd_wen     	(rd_wen_reg      ),
     .lsu_used   	(lsu_used    ),
     .lsu_valid  	(lsu_valid_out   ),
@@ -270,7 +277,7 @@ core_ex_wbu u_core_ex_wbu(
 
 
 
-wire    lsu_used = i_lsu_inst_bus[`CORE_LSU_INST_LOAD] | i_lsu_inst_bus[`CORE_LSU_INST_STORE];
+wire    lsu_used = lsu_inst_bus_reg[`CORE_LSU_INST_LOAD] | lsu_inst_bus_reg[`CORE_LSU_INST_STORE];
 
 ///output assign//////
 assign wb_idx = rd_idx_reg;
