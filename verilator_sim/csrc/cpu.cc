@@ -2,6 +2,8 @@
 #include <memory.h>
 #include <cpu.h>
 
+#define LSU_ADDR signal(u_core_ex_exu__DOT__u_core_ex_lsu_dpic_test__DOT__mem_addr)
+
 TOP_NAME *top = NULL;
 VerilatedFstC *tfp = NULL;
 VerilatedContext *contextp = NULL;
@@ -43,7 +45,10 @@ void cpu_exec(unsigned long n) {
 		one_cycle();
 #ifdef DIFFTEST
 		static int write_back = 0;
-		if (write_back == 1) difftest_step();
+		if (write_back == 1) {
+			if (LSU_ADDR == 0xa00003f8) difftest_skip_ref();
+			difftest_step();
+		}
 		write_back = top->inst_end;
 #endif
 		if (top->rv_ebreak_sim || trigger_difftest) break;

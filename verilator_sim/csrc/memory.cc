@@ -21,6 +21,11 @@ void difftest_skip_ref();
 void reg_display();
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
+	if (waddr == SERIAL_BASE) {
+		printf("%c", (char)wdata);
+		return;
+	}
+
 	uint8_t *haddr = guest2host(waddr & ~0x3u);
 	if (!(haddr >= memory && haddr <= memory + MEM_SIZE)) {
 		printf("\nwrite %x out of bound\n\n", waddr);
