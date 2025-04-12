@@ -64,6 +64,8 @@
 //LSU
 `define CORE_LSU_WMASK_WIDTH 8
 
+//csr module
+`define CORE_MSTATUS_RESET_VALUE 32'h1800
 
 //DPI_C
 `define DPI_C

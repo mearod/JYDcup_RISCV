@@ -15,12 +15,12 @@ module core_ex_excp(
     output  irq_flush_req
 );
 
-assign  cmt_mstatus_en  = excp_ecall;
+assign  cmt_mstatus_en  = 0;
 assign  cmt_mcause_en   = excp_ecall;
 assign  cmt_mepc_en     = excp_ecall;
 
 assign  cmt_mstatus     = excp_ecall ? 0 : 0; //to do
-assign  cmt_mcause      = excp_ecall ? 32'h11 : 0;
+assign  cmt_mcause      = excp_ecall ? 32'd11 : 0;
 assign  cmt_mepc        = excp_ecall ? current_pc : 0;
 
 assign  irq_flush_req   = excp_ecall;

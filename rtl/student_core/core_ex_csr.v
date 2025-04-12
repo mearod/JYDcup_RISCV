@@ -43,7 +43,7 @@ assign rd_csr_dat   = `CORE_XLEN'b0
 wire [`CORE_XLEN-1:0] csr_mstatus;
 wire [`CORE_XLEN-1:0]csr_mstatus_next   = cmt_mstatus_en ? cmt_mstatus : wr_csr_dat;
 wire csr_mstatus_wr_en  = rd_mstatus & csr_wr_en | cmt_mstatus_en;
-gnrl_dfflr #(`CORE_XLEN,`CORE_XLEN'b0)csr_mstatus_reg(
+gnrl_dfflr #(`CORE_XLEN,`CORE_MSTATUS_RESET_VALUE)csr_mstatus_reg(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
     .din   	(csr_mstatus_next    ),

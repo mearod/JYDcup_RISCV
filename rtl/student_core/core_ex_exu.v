@@ -354,8 +354,10 @@ core_ex_wbu u_core_ex_wbu(
     .rd_wen     	(rd_wen_reg      ),
     .lsu_used   	(lsu_used    ),
     .lsu_valid  	(lsu_valid_out   ),
+    .csr_alu_wr_en  (csr_alu_wr_en   ),
     .alu_result 	(alu_result  ),
     .lsu_result 	(lsu_result  ),
+    .csr_alu_result (csr_alu_wr_dat  ),
     .wb_en      	(wb_en       ),
     .wb_data    	(wb_data     )
 );
