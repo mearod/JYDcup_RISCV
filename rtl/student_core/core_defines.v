@@ -46,6 +46,17 @@
 `define CORE_LSU_INST_W 4
 `define CORE_LSU_INST_LU 5
 
+//csr inst
+`define CORE_CSR_INST_WIDTH 7
+`define CORE_CSR_INST_R 0
+`define CORE_CSR_INST_W 1
+`define CORE_CSR_INST_C_S 2
+`define CORE_CSR_INST_ZIMM 3
+
+`define CORE_CSR_INST_EBREAK 4
+`define CORE_CSR_INST_ECALL 5
+`define CORE_CSR_INST_MRET 6
+
 //IFU
 `define CORE_PC_RESET_VALUE `CORE_PC_WIDTH'h80000000
 

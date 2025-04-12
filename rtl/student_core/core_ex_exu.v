@@ -32,6 +32,7 @@ module core_ex_exu(
     input   [`CORE_BJ_DEC_INST_WIDTH-1:0] i_bj_dec_inst_bus,
     input   [`CORE_ALU_INST_WIDTH-1:0] i_alu_inst_bus,
     input   [`CORE_LSU_INST_WIDTH-1:0] i_lsu_inst_bus,
+    input   [`CORE_CSR_INST_WIDTH-1:0] i_csr_inst_bus,
 
     output  cmt_pipeline_flush_req,
     output  [`CORE_PC_WIDTH-1:0] cmt_flush_pc,
@@ -190,6 +191,16 @@ gnrl_dfflr #(`CORE_LSU_INST_WIDTH,`CORE_LSU_INST_WIDTH'b0)lsu_inst_bus_ex(
     .dout  	(lsu_inst_bus_reg   ),
     .wen   	(pipeline_update    )
 );
+
+
+wire [`CORE_CSR_INST_WIDTH-1:0]csr_inst_bus_reg;
+gnrl_dfflr #(`CORE_CSR_INST_WIDTH,`CORE_CSR_INST_WIDTH'b0)csr_inst_bus_ex(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(i_csr_inst_bus    ),
+    .dout  	(csr_inst_bus_reg   ),
+    .wen   	(pipeline_update    )
+);
 ///////////////////////
 
 // output declaration of module core_ex_alu
@@ -260,18 +271,80 @@ core_ex_lsu_dpic_test u_core_ex_lsu_dpic_test(
 ////////////////////////////////////
 
 
-//pc_commit///////////
+//commit///////////
+
 wire cmt_pipeline_flush_req_tmp;
+wire cmt_mstatus_en;
+wire cmt_mcause_en;
+wire cmt_mepc_en;
+wire [`CORE_XLEN-1:0] cmt_mstatus;
+wire [`CORE_XLEN-1:0] cmt_mcause;
+wire [`CORE_XLEN-1:0] cmt_mepc;
+
 core_ex_commit u_core_ex_commit(
     .branch_predict     	(branch_predict_reg      ),
     .branch_jump        	(branch_jump         ),
     .pipeline_flush_req 	(cmt_pipeline_flush_req_tmp  ),
     .pc                 	(pc_reg                  ),
     .bj_pc              	(bj_pc               ),
-    .flush_pc           	(cmt_flush_pc            )
+    .flush_pc           	(cmt_flush_pc            ),
+    .csr_mstatus_r      	(csr_mstatus_r       ),
+    .csr_mtvec_r        	(csr_mtvec_r         ),
+    .csr_mcause_r       	(csr_mcause_r        ),
+    .csr_mepc_r         	(csr_mepc_r          ),
+    .csr_inst_bus       	(csr_inst_bus_reg        ),
+    .cmt_mstatus_en     	(cmt_mstatus_en      ),
+    .cmt_mcause_en      	(cmt_mcause_en       ),
+    .cmt_mepc_en        	(cmt_mepc_en         ),
+    .cmt_mstatus        	(cmt_mstatus         ),
+    .cmt_mcause         	(cmt_mcause          ),
+    .cmt_mepc           	(cmt_mepc            )
 );
+
 /////////////////////
 
+//csr alu//////////
+wire csr_alu_wr_en;
+wire [`CORE_XLEN-1:0] csr_alu_wr_dat;
+
+core_ex_csr_alu u_core_ex_csr_alu(
+    .csr_inst_bus   	(csr_inst_bus_reg    ),
+    .zimm           	(rs2_idx_reg            ),
+    .rs1            	(rs1_dat_reg             ),
+    .rd_csr_dat     	(rd_csr_dat      ),
+    .csr_alu_wr_en  	(csr_alu_wr_en   ),
+    .csr_alu_wr_dat 	(csr_alu_wr_dat  )
+);
+/////////////
+
+//////csr///////////
+wire [11:0]csr_idx  = imm_reg[11:0]; 
+// output declaration of module core_ex_csr
+wire [`CORE_XLEN-1:0] csr_mstatus_r;
+wire [`CORE_XLEN-1:0] csr_mtvec_r;
+wire [`CORE_XLEN-1:0] csr_mcause_r;
+wire [`CORE_XLEN-1:0] csr_mepc_r;
+wire [`CORE_XLEN-1:0] rd_csr_dat;
+
+core_ex_csr u_core_ex_csr(
+    .clk            	(clk             ),
+    .rst_n          	(rst_n           ),
+    .csr_wr_en      	(csr_alu_wr_en       ),
+    .csr_idx        	(csr_idx         ),
+    .wr_csr_dat     	(csr_alu_wr_dat      ),
+    .cmt_mstatus_en 	(cmt_mstatus_en  ),
+    .cmt_mcause_en  	(cmt_mcause_en   ),
+    .cmt_mepc_en    	(cmt_mepc_en     ),
+    .cmt_mstatus    	(cmt_mstatus     ),
+    .cmt_mcause     	(cmt_mcause      ),
+    .cmt_mepc       	(cmt_mepc        ),
+    .csr_mstatus_r  	(csr_mstatus_r   ),
+    .csr_mtvec_r    	(csr_mtvec_r     ),
+    .csr_mcause_r   	(csr_mcause_r    ),
+    .csr_mepc_r     	(csr_mepc_r      ),
+    .rd_csr_dat     	(rd_csr_dat      )
+);
+////////////
 
 // output declaration of module core_ex_wbu
 core_ex_wbu u_core_ex_wbu(
@@ -289,7 +362,7 @@ core_ex_wbu u_core_ex_wbu(
 
 
 
-wire    lsu_used = lsu_inst_bus_reg[`CORE_LSU_INST_LOAD] | lsu_inst_bus_reg[`CORE_LSU_INST_STORE];
+wire lsu_used = lsu_inst_bus_reg[`CORE_LSU_INST_LOAD] | lsu_inst_bus_reg[`CORE_LSU_INST_STORE];
 
 ///output assign//////
 assign wb_idx = rd_idx_reg;

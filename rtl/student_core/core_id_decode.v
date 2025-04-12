@@ -15,8 +15,10 @@ module core_id_decode(
     output  [`CORE_BJ_DEC_INST_WIDTH-1:0] o_bj_dec_inst_bus,
     output  [`CORE_ALU_INST_WIDTH-1:0] o_alu_inst_bus,
     output  [`CORE_LSU_INST_WIDTH-1:0] o_lsu_inst_bus,
+    output  [`CORE_CSR_INST_WIDTH-1:0] o_csr_inst_bus,
+    
 
-		output  rv_ebreak_sim
+	output  rv_ebreak_sim
 );
 
 assign rv_ebreak_sim = rv_ebreak;
@@ -112,18 +114,20 @@ wire rv_and    = opcode_alu_r & func3_111 & func7_0000000;
 ///////////
 
 //system inst
-wire rv_fence      = opcode_fence & func3_000;
-wire rv_fence_i    = opcode_fence & func3_001;
+wire rv_fence   = opcode_fence & func3_000;
+wire rv_fence_i = opcode_fence & func3_001;
 
-wire rv_ecall  = opcode_system & (i_inst[31:7] == 25'b0);
-wire rv_ebreak = opcode_system & (i_inst[31:7] == 25'b0000000000010000000000000);
+wire rv_ecall   = opcode_system & (i_inst[31:7] == 25'b0);
+wire rv_ebreak  = opcode_system & (i_inst[31:7] == 25'b0000000000010000000000000);
+wire rv_mret    = opcode_system & (i_inst[31:7] == 25'b0011000000100000000000000);
+wire flag_csr_inst  = opcode_system & ~(func3_000 | func3_100);
 
-wire rv_csrrw  = opcode_system & func3_001;
-wire rv_csrrs  = opcode_system & func3_010;
-wire rv_csrrc  = opcode_system & func3_011;
-wire rv_csrrwi = opcode_system & func3_101;
-wire rv_csrrsi = opcode_system & func3_110;
-wire rv_csrrci = opcode_system & func3_111;
+wire rv_csrrw   = opcode_system & func3_001;
+wire rv_csrrs   = opcode_system & func3_010;
+wire rv_csrrc   = opcode_system & func3_011;
+wire rv_csrrwi  = opcode_system & func3_101;
+wire rv_csrrsi  = opcode_system & func3_110;
+wire rv_csrrci  = opcode_system & func3_111;
 ///////////
 
 
@@ -166,6 +170,17 @@ assign o_lsu_inst_bus[`CORE_LSU_INST_LU]      = rv_lbu | rv_lhu;
 ///////////
 
 //mul inst:reserve
+
+//csr inst
+assign o_csr_inst_bus[`CORE_CSR_INST_R]     = rv_csrrs | rv_csrrc | rv_csrrsi | rv_csrrci;
+assign o_csr_inst_bus[`CORE_CSR_INST_W]     = rv_csrrw | rv_csrrwi;
+assign o_csr_inst_bus[`CORE_CSR_INST_C_S]   = rv_csrrc | rv_csrrci;
+assign o_csr_inst_bus[`CORE_CSR_INST_ZIMM]  = rv_csrrwi | rv_csrrsi | rv_csrrci;
+
+assign o_csr_inst_bus[`CORE_CSR_INST_EBREAK]    = rv_ebreak;
+assign o_csr_inst_bus[`CORE_CSR_INST_ECALL]     = rv_ecall;
+assign o_csr_inst_bus[`CORE_CSR_INST_MRET]      = rv_mret;
+
 
 //imm decode
 wire [`CORE_XLEN-1:0] imm_i = {{20{i_inst[31]}},i_inst[31:20]};

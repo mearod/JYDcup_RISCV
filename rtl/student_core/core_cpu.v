@@ -56,6 +56,7 @@ wire [`CORE_XLEN-1:0] idu_imm;
 wire [`CORE_BJ_DEC_INST_WIDTH-1:0] idu_bj_dec_inst_bus;
 wire [`CORE_ALU_INST_WIDTH-1:0] idu_alu_inst_bus;
 wire [`CORE_LSU_INST_WIDTH-1:0] idu_lsu_inst_bus;
+wire [`CORE_CSR_INST_WIDTH-1:0] idu_csr_inst_bus;
 
 core_id_idu u_core_id_idu(
     .clk               	(clk                ),
@@ -86,6 +87,7 @@ core_id_idu u_core_id_idu(
     .o_bj_dec_inst_bus 	(idu_bj_dec_inst_bus  ),
     .o_alu_inst_bus    	(idu_alu_inst_bus     ),
     .o_lsu_inst_bus    	(idu_lsu_inst_bus     ),
+    .o_csr_inst_bus    	(idu_csr_inst_bus     ),
     .exu_busy           (exu_busy),
 	.rv_ebreak_sim      (rv_ebreak_sim        )
 );
@@ -147,12 +149,13 @@ core_ex_exu u_core_ex_exu(
     .i_bj_dec_inst_bus      	(idu_bj_dec_inst_bus       ),
     .i_alu_inst_bus         	(idu_alu_inst_bus          ),
     .i_lsu_inst_bus         	(idu_lsu_inst_bus          ),
+    .i_csr_inst_bus         	(idu_csr_inst_bus          ),
     .cmt_pipeline_flush_req 	(cmt_pipeline_flush_req    ),
     .cmt_flush_pc           	(cmt_flush_pc              ),
     .wb_en                  	(wb_en                     ),
     .wb_idx                  	(wb_idx                    ),
     .wb_data                	(wb_data                   ),
-    .exu_busy                 (exu_busy                  ),
+    .exu_busy                   (exu_busy                  ),
     .rd_idx_ex_forward       	(rd_idx_ex_forward         ),
     .rd_wen_ex_forward       	(rd_wen_ex_forward         ),
     .rd_dat_ex_forward       	(rd_dat_ex_forward         )
