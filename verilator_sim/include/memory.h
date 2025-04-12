@@ -8,6 +8,7 @@
 #define MEM_SIZE    0x08000000
 
 #define SERIAL_BASE 0xa00003f8
+#define TIMER_BASE  0xa0000048
 
 typedef struct {
 	uint32_t start;

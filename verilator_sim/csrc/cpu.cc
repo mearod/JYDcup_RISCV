@@ -46,7 +46,10 @@ void cpu_exec(unsigned long n) {
 #ifdef DIFFTEST
 		static int write_back = 0;
 		if (write_back == 1) {
-			if (LSU_ADDR == 0xa00003f8) difftest_skip_ref();
+			if (LSU_ADDR == SERIAL_BASE || 
+					LSU_ADDR == TIMER_BASE  ||
+					LSU_ADDR == TIMER_BASE + 4) 
+				difftest_skip_ref();
 			difftest_step();
 		}
 		write_back = top->inst_end;

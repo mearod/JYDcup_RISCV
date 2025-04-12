@@ -42,6 +42,12 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 
 extern "C" int pmem_read(int raddr) {
 	if (monitor_start == 0) return 0;
+	if (raddr == TIMER_BASE || raddr == TIMER_BASE + 4) {
+		if (raddr == TIMER_BASE) return (int) clock();
+		else return (int)(clock() >> 32);
+	}
+	if (raddr == SERIAL_BASE) { return 0; }
+
 	uint8_t *haddr = guest2host(raddr & ~0x3u);
 	if (!(haddr >= memory && haddr <= memory + MEM_SIZE)) {
 		printf("\nread %x out of bound\n\n", raddr);
