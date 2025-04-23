@@ -42,9 +42,8 @@ module core_id_idu(
     output  [`CORE_LSU_INST_WIDTH-1:0] o_lsu_inst_bus,
     output  [`CORE_CSR_INST_WIDTH-1:0] o_csr_inst_bus,
 
-    input   exu_busy,
+    input   exu_busy
 
-	output  rv_ebreak_sim
 );
 
 
@@ -111,9 +110,7 @@ core_id_decode inst_decoder(
     .o_bj_dec_inst_bus 	(o_bj_dec_inst_bus  ),
     .o_alu_inst_bus    	(o_alu_inst_bus     ),
     .o_lsu_inst_bus    	(o_lsu_inst_bus     ),
-    .o_csr_inst_bus    	(o_csr_inst_bus     ),
-
-    .rv_ebreak_sim      (rv_ebreak_sim )
+    .o_csr_inst_bus    	(o_csr_inst_bus     )
 );
 
 assign o_pc = pc_reg;

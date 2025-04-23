@@ -1,6 +1,6 @@
 `include "core_defines.v"
 
-module core_ex_lsu_dpic_test(
+module core_ex_lsu_test(
     input   clk,
     input   rst_n,
 
@@ -13,9 +13,14 @@ module core_ex_lsu_dpic_test(
     input   [`CORE_XLEN-1:0] i_mem_addr,
     input   [`CORE_XLEN-1:0] i_write_data,
 
-    output  [7:0]wmask,
+    output  [`CORE_LSU_WMASK_WIDTH-1:0]wmask,
     output  flag_unalign_write,
-    output  [`CORE_XLEN-1:0] read_data
+    output  [`CORE_XLEN-1:0] read_data,
+
+    output  [`CORE_XLEN-1:0] biu_pmem_addr,
+    input   [`CORE_XLEN-1:0] biu_pmem_read,
+    output  [`CORE_XLEN-1:0] biu_pmem_write,
+    output  biu_pmem_write_en
 );
 
 ///state machine////
@@ -61,9 +66,12 @@ core_ex_lsu_align u_core_ex_lsu_align(
 /////////////////
 
 
+wire lsu_wen = (isu_state == ISU_WORK) & lsu_inst_bus[`CORE_LSU_INST_STORE];
+assign biu_pmem_write_en    = lsu_wen;
+assign biu_pmem_addr        = mem_addr;
+assign biu_pmem_write       = write_data_aligned;
 /////////DPI_C:for verilator test
 `ifdef DPI_C
-wire lsu_wen = (isu_state == ISU_WORK) & lsu_inst_bus[`CORE_LSU_INST_STORE];
 
 always @(*)begin
     if (lsu_inst_bus[`CORE_LSU_INST_LOAD]) begin 
@@ -82,6 +90,8 @@ always @(posedge clk) begin
     else begin
     end
 end
+`else
+assign read_data_unaligned = biu_data_in;
 `endif
 ////////////////////
 

@@ -15,13 +15,9 @@ module core_id_decode(
     output  [`CORE_BJ_DEC_INST_WIDTH-1:0] o_bj_dec_inst_bus,
     output  [`CORE_ALU_INST_WIDTH-1:0] o_alu_inst_bus,
     output  [`CORE_LSU_INST_WIDTH-1:0] o_lsu_inst_bus,
-    output  [`CORE_CSR_INST_WIDTH-1:0] o_csr_inst_bus,
+    output  [`CORE_CSR_INST_WIDTH-1:0] o_csr_inst_bus
     
-
-	output  rv_ebreak_sim
 );
-
-assign rv_ebreak_sim = rv_ebreak;
 
 wire [6:0]opcode  = i_inst[6:0];
 wire [4:0]rs1 = i_inst[19:15];

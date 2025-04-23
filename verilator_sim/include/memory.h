@@ -9,6 +9,7 @@
 
 #define SERIAL_BASE 0xa00003f8
 #define TIMER_BASE  0xa0000048
+#define KEYBRD_BASE 0xa0000060
 
 typedef struct {
 	uint32_t start;

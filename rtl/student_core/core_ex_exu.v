@@ -45,8 +45,17 @@ module core_ex_exu(
     output  exu_busy,
     output  [`CORE_RFIDX_WIDTH-1:0] rd_idx_ex_forward,
     output  rd_wen_ex_forward,
-    output  [`CORE_XLEN-1:0] rd_dat_ex_forward
+    output  [`CORE_XLEN-1:0] rd_dat_ex_forward,
+
+    output  [`CORE_XLEN-1:0] biu_pmem_addr,
+    input   [`CORE_XLEN-1:0] biu_pmem_read,
+    output  [`CORE_XLEN-1:0] biu_pmem_write,
+    output  biu_pmem_write_en,
+
+    output  rv_ebreak_sim
 );
+
+assign rv_ebreak_sim = csr_inst_bus_reg[`CORE_CSR_INST_EBREAK];
 
 //pipeline related////
 wire pipeline_update = ready_in & valid_in;
@@ -253,7 +262,7 @@ wire [7:0] wmask;
 wire flag_unalign_write;
 wire [`CORE_XLEN-1:0] lsu_result;
 
-core_ex_lsu_dpic_test u_core_ex_lsu_dpic_test(
+core_ex_lsu_test u_core_ex_lsu_test(
     .clk                	(clk                 ),
     .rst_n              	(rst_n               ),
     .valid_in               (lsu_valid_in),
@@ -264,8 +273,13 @@ core_ex_lsu_dpic_test u_core_ex_lsu_dpic_test(
     .i_write_data       	(rs2_dat_reg        ),
     .wmask              	(wmask               ),
     .flag_unalign_write 	(flag_unalign_write  ),
-    .read_data          	(lsu_result           )
+    .read_data          	(lsu_result           ),
+    .biu_pmem_addr       	(biu_pmem_addr        ),
+    .biu_pmem_read      	(biu_pmem_read       ),
+    .biu_pmem_write     	(biu_pmem_write      ),
+    .biu_pmem_write_en  	(biu_pmem_write_en   )
 );
+
 
 
 ////////////////////////////////////

@@ -1,7 +1,7 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#define DIFFTEST
+//#define DIFFTEST
 #define WAVE_TRACE
 
 #define signal(s) top->rootp->core_cpu__DOT__##s

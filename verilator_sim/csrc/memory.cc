@@ -47,6 +47,7 @@ extern "C" int pmem_read(int raddr) {
 		else return (int)(clock() >> 32);
 	}
 	if (raddr == SERIAL_BASE) { return 0; }
+	if (raddr == KEYBRD_BASE) { return 0; }
 
 	uint8_t *haddr = guest2host(raddr & ~0x3u);
 	if (!(haddr >= memory && haddr <= memory + MEM_SIZE)) {

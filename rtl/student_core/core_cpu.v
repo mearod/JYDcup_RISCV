@@ -3,8 +3,14 @@
 module core_cpu(
     input   clk,
     input   rst_n,
-		output  rv_ebreak_sim,
-		output  inst_end
+
+    output  [`CORE_XLEN-1:0] biu_pmem_addr,
+    input   [`CORE_XLEN-1:0] biu_pmem_read,
+    output  [`CORE_XLEN-1:0] biu_pmem_write,
+    output  biu_pmem_write_en,
+
+    output  rv_ebreak_sim,
+	output  inst_end
 );
 
 assign inst_end = difftest_end & exu_busy;
@@ -88,8 +94,7 @@ core_id_idu u_core_id_idu(
     .o_alu_inst_bus    	(idu_alu_inst_bus     ),
     .o_lsu_inst_bus    	(idu_lsu_inst_bus     ),
     .o_csr_inst_bus    	(idu_csr_inst_bus     ),
-    .exu_busy           (exu_busy),
-	.rv_ebreak_sim      (rv_ebreak_sim        )
+    .exu_busy           (exu_busy)
 );
 
 
@@ -158,7 +163,15 @@ core_ex_exu u_core_ex_exu(
     .exu_busy                   (exu_busy                  ),
     .rd_idx_ex_forward       	(rd_idx_ex_forward         ),
     .rd_wen_ex_forward       	(rd_wen_ex_forward         ),
-    .rd_dat_ex_forward       	(rd_dat_ex_forward         )
+    .rd_dat_ex_forward       	(rd_dat_ex_forward         ),
+
+    .biu_pmem_addr       	(biu_pmem_addr        ),
+    .biu_pmem_read      	(biu_pmem_read       ),
+    .biu_pmem_write     	(biu_pmem_write      ),
+    .biu_pmem_write_en  	(biu_pmem_write_en   ),
+
+    .rv_ebreak_sim      (rv_ebreak_sim        )
+
 );
 
 
