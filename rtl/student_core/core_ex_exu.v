@@ -1,9 +1,7 @@
 `include "core_defines.v"
 
 module core_ex_exu(
-    `ifdef DPI_C
-        output difftest_end,
-    `endif
+    output difftest_end,
 
     input clk,
     input rst_n,
@@ -50,10 +48,13 @@ module core_ex_exu(
     output  [`CORE_XLEN-1:0] biu_pmem_addr,
     input   [`CORE_XLEN-1:0] biu_pmem_read,
     output  [`CORE_XLEN-1:0] biu_pmem_write,
+    output  [`CORE_LSU_WMASK_WIDTH-1:0] biu_pmem_wmask,
     output  biu_pmem_write_en,
 
     output  rv_ebreak_sim
 );
+
+
 
 assign rv_ebreak_sim = csr_inst_bus_reg[`CORE_CSR_INST_EBREAK];
 
@@ -61,6 +62,7 @@ assign rv_ebreak_sim = csr_inst_bus_reg[`CORE_CSR_INST_EBREAK];
 wire pipeline_update = ready_in & valid_in;
 assign valid_out     = wb_en;
 
+wire lsu_used;
 wire ready_in_tmp;
 wire ready_in_next   = lsu_used & lsu_valid_out 
                      | (~(valid_in & ready_in) & ready_in_tmp);
@@ -258,7 +260,6 @@ gnrl_dffr u_gnrl_dffr(
 // output declaration of module core_ex_lsu_dpic_test
 wire lsu_valid_out;
 wire lsu_ready_in;
-wire [7:0] wmask;
 wire flag_unalign_write;
 wire [`CORE_XLEN-1:0] lsu_result;
 
@@ -271,7 +272,7 @@ core_ex_lsu_test u_core_ex_lsu_test(
     .i_lsu_inst_bus     	(lsu_inst_bus_reg      ),
     .i_mem_addr         	(alu_result          ),
     .i_write_data       	(rs2_dat_reg        ),
-    .wmask              	(wmask               ),
+    .wmask              	(biu_pmem_wmask),
     .flag_unalign_write 	(flag_unalign_write  ),
     .read_data          	(lsu_result           ),
     .biu_pmem_addr       	(biu_pmem_addr        ),
@@ -362,9 +363,7 @@ core_ex_csr u_core_ex_csr(
 
 // output declaration of module core_ex_wbu
 core_ex_wbu u_core_ex_wbu(
-    `ifdef DPI_C
     .difftest_end   (difftest_end),
-    `endif
     .rd_wen     	(rd_wen_reg      ),
     .lsu_used   	(lsu_used    ),
     .lsu_valid  	(lsu_valid_out   ),
@@ -378,7 +377,7 @@ core_ex_wbu u_core_ex_wbu(
 
 
 
-wire lsu_used = lsu_inst_bus_reg[`CORE_LSU_INST_LOAD] | lsu_inst_bus_reg[`CORE_LSU_INST_STORE];
+assign lsu_used = lsu_inst_bus_reg[`CORE_LSU_INST_LOAD] | lsu_inst_bus_reg[`CORE_LSU_INST_STORE];
 
 ///output assign//////
 assign wb_idx = rd_idx_reg;

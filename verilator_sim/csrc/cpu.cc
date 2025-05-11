@@ -2,7 +2,7 @@
 #include <memory.h>
 #include <cpu.h>
 
-#define LSU_ADDR signal(u_core_ex_exu__DOT__u_core_ex_lsu_dpic_test__DOT__mem_addr)
+#define LSU_ADDR signal(u_core_ex_exu__DOT__u_core_ex_lsu_test__DOT__mem_addr)
 
 TOP_NAME *top = NULL;
 VerilatedFstC *tfp = NULL;

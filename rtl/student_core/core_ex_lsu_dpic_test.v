@@ -1,5 +1,6 @@
 `include "core_defines.v"
 
+
 module core_ex_lsu_test(
     input   clk,
     input   rst_n,
@@ -91,7 +92,7 @@ always @(posedge clk) begin
     end
 end
 `else
-assign read_data_unaligned = biu_data_in;
+assign read_data_unaligned = biu_pmem_read;
 `endif
 ////////////////////
 

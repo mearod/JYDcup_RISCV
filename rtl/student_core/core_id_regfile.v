@@ -26,8 +26,9 @@ generate
         end
         else begin:rfno0
             assign rf_wen[i] = wb_dest_wen & (wb_dest_idx == i);
-            gnrl_dffl #(`CORE_XLEN)u_gnrl_dffl(
+            gnrl_dfflr #(`CORE_XLEN,`CORE_XLEN'h0)rf(
                 .clk   	(clk    ),
+                .rst_n 	(rst_n  ),
                 .din   	(wb_dest_dat    ),
                 .dout  	(rf_r[i]   ),
                 .wen   	(rf_wen[i]    )

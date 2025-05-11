@@ -1,9 +1,9 @@
 `include "core_defines.v"
 
 module core_ex_wbu(
-    `ifdef DPI_C
-        output difftest_end,
-    `endif
+
+    output difftest_end,
+
 
     input   rd_wen,
 
@@ -26,7 +26,7 @@ assign wb_data  = lsu_used ? lsu_result :
 
 assign wb_en    = (lsu_used ? lsu_valid : 1'b1) & rd_wen;
 
-`ifdef DPI_C
+
 assign difftest_end = lsu_used ? lsu_valid : 1'b1;
-`endif
+
 endmodule

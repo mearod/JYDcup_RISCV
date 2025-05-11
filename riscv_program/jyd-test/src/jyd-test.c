@@ -6,7 +6,7 @@ int main() {
 	if (io_read(AM_GPIO_CONFIG).present == false) return 1;
 	int state = 0;
 	while (1) {
-		if (io_read(AM_GPIO_KEY).data & 1) state = !state;
+		//if (io_read(AM_GPIO_KEY).data & 1) state = !state;
 
 		AM_GPIO_SW_T sw = io_read(AM_GPIO_SW);
 		io_write(AM_GPIO_LED, sw.data[state]);
@@ -14,3 +14,11 @@ int main() {
 	}
 	return 0;
 }
+
+// int main() {
+// 	void *led_addr = (void *)0xf040;
+// 	while (1){
+// 	*(volatile uint32_t *)led_addr = 0xabcd;
+// 	}
+// 	return 0;
+// }

@@ -4,9 +4,12 @@ module core_cpu(
     input   clk,
     input   rst_n,
 
+    output  [`CORE_XLEN-1:0] biu_irom_addr,
+    output  [`CORE_XLEN-1:0] biu_irom_inst,
     output  [`CORE_XLEN-1:0] biu_pmem_addr,
     input   [`CORE_XLEN-1:0] biu_pmem_read,
     output  [`CORE_XLEN-1:0] biu_pmem_write,
+    output  [`CORE_LSU_WMASK_WIDTH-1:0] biu_pmem_wmask,
     output  biu_pmem_write_en,
 
     output  rv_ebreak_sim,
@@ -14,6 +17,8 @@ module core_cpu(
 );
 
 assign inst_end = difftest_end & exu_busy;
+assign biu_irom_addr = ifu_pc;
+assign biu_irom_inst = rom_inst;
 
 // output declaration of module core_ifu_rom_dpic_test
 wire [`CORE_INST_WIDTH-1:0] rom_inst;
@@ -168,6 +173,7 @@ core_ex_exu u_core_ex_exu(
     .biu_pmem_addr       	(biu_pmem_addr        ),
     .biu_pmem_read      	(biu_pmem_read       ),
     .biu_pmem_write     	(biu_pmem_write      ),
+    .biu_pmem_wmask         (biu_pmem_wmask      ),
     .biu_pmem_write_en  	(biu_pmem_write_en   ),
 
     .rv_ebreak_sim      (rv_ebreak_sim        )
