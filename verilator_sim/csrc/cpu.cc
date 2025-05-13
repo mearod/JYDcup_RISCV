@@ -11,6 +11,9 @@ VerilatedContext *contextp = NULL;
 int trigger_difftest = 0;
 extern int wave_trace;
 
+static uint64_t total_cycle = 0;
+static uint64_t total_inst = 0;
+
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 void difftest_step();
 void difftest_skip_ref();
@@ -43,6 +46,8 @@ void cpu_exec(unsigned long n) {
 
 	for (; n > 0; --n) {
 		one_cycle();
+		++total_cycle;
+		if (top->inst_end) ++total_inst;
 #ifdef DIFFTEST
 		static int write_back = 0;
 		if (write_back == 1) {
@@ -66,11 +71,10 @@ void cpu_exec(unsigned long n) {
 		return;
 	}
 	if (!top->rv_ebreak_sim) return;
+	printf("total cycle: %ld\ntotal inst: %ld\nIPC: %f\n", 
+			total_cycle, total_inst, (double)total_inst/total_cycle);
 	if (cpu_gpr(10))
-		printf("\33[1;31mHIT BAD TRAP\33[1;0m ");
+		printf("\33[1;31mHIT BAD TRAP\33[1;0m (return value: %d) ", cpu_gpr(10));
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");
 	printf("at pc = %#x\n", signal(ifu_pc));
-#ifdef PRINT_PERF
-	print_statistic();
-#endif
 }

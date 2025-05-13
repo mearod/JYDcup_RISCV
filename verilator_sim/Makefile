@@ -38,6 +38,9 @@ endif
 ifneq ($(DIFF_SO),)
 override ARGS += -d $(DIFF_SO)
 endif
+ifeq ($(BATCH),1)
+override ARGS += -b
+endif
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@rm -rf $(OBJ_DIR)

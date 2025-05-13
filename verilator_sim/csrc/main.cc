@@ -20,7 +20,9 @@ int main(int argc, char *argv[]) {
 
 	delete top;
 	delete contextp;
+#ifdef WAVE_TRACE
 	tfp->close();
+#endif
 
 	return 0;
 }

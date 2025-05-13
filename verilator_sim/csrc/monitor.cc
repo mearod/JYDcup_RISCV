@@ -19,16 +19,24 @@ static long load_img() {
 	}
 
 	FILE *fp = fopen(img_file, "rb");
-	assert(fp);
+	if (fp == NULL) {
+		printf("\nopen file \"%s\" failed\n", img_file);
+		assert(0);
+	}
 
 	fseek(fp, 0, SEEK_END);
 	long size = ftell(fp);
 
 	fseek(fp, 0, SEEK_SET);
 	int ret = fread(guest2host(MEM_BASE), size, 1, fp);
-	assert(ret == 1);
+	if (ret != 1) {
+		printf("\nread file \"%s\" failed", img_file);
+		assert(0);
+	}
 
 	fclose(fp);
+
+	printf("\nload file \"%s\", size: %d bytes\n", img_file, size);
 
 	return size;
 }

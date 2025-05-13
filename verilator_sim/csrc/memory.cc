@@ -23,6 +23,7 @@ void reg_display();
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 	if (waddr == SERIAL_BASE) {
 		printf("%c", (char)wdata);
+		fflush(stdout);
 		return;
 	}
 

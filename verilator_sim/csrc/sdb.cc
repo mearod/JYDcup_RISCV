@@ -23,7 +23,7 @@ static int cmd_q(char *args) {
 	return -1;
 }
 
-static int cmd_si(char *args) {
+static int cmd_sc(char *args) {
 	int steps = 1;
 	if (args != NULL)
 		sscanf(args, "%d", &steps);
@@ -45,7 +45,10 @@ static int cmd_x(char *args) {
 	int num = 1;
 	uint8_t* haddr = NULL;
 	uint32_t paddr = 0;
-	if (args == NULL) return 0;
+	if (args == NULL) {
+		printf("Usage: x [memory size to scan] [memory address to scan]\n");
+		return 0;
+	}
 	sscanf(args, "%d %x", &num, &paddr);
 	haddr = guest2host(paddr);
 	uint32_t *addr = (uint32_t *)haddr;
@@ -73,7 +76,7 @@ static char *rl_gets() {
 		line_read = NULL;
 	}
 
-	line_read = readline("(npc) ");
+	line_read = readline("(jyd) ");
 
 	if (line_read && *line_read) {
 		add_history(line_read);
@@ -89,8 +92,8 @@ static struct {
 } cmd_table [] = {
 	{ "help", "Display information about all supported commands", cmd_help },
 	{ "c", "Continue the execution of the program", cmd_c },
-	{ "q", "Exit NPC", cmd_q },
-	{ "si", "Execute the program for several steps", cmd_si },
+	{ "q", "Exit simulation", cmd_q },
+	{ "sc", "Execute the program for several steps", cmd_sc },
 	{ "info", "Print the status of the program", cmd_info },
 	{ "x", "Scan the memory", cmd_x},
 	{ "wt", "wave trace", cmd_wt},
@@ -136,7 +139,7 @@ void sdb_mainloop() {
 
 		char *args = cmd + strlen(cmd) + 1;
 		if (args >= str_end) {
-			args == NULL;
+			args = NULL;
 		}
 
 		int i;
