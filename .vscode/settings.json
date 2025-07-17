@@ -2,6 +2,15 @@
     "files.associations": {
         "klib.h": "c",
         "am.h": "c",
-        "klib-macros.h": "c"
+        "klib-macros.h": "c",
+        "type_traits": "cpp",
+        "functional": "cpp",
+        "bit": "cpp",
+        "compare": "cpp",
+        "cstddef": "cpp",
+        "string": "cpp",
+        "limits": "cpp",
+        "memory": "cpp",
+        "new": "cpp"
     }
 }

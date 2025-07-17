@@ -1,3 +1,4 @@
 /netlist
 /verilator_sim/build/
+/verilator_sim_version2/build/
 /verilator_sim/*.fst*

@@ -1,0 +1,71 @@
+//cpu information
+`define CORE_XLEN 32
+`define CORE_INST_WIDTH 32
+`define CORE_PC_WIDTH 32
+
+`define CORE_XLEN_SUB1 31
+
+//ex_regfile
+`define CORE_RFIDX_WIDTH 5
+`define CORE_RF_NUM 32
+
+//alu_inst
+`define CORE_ALU_INST_WIDTH 18
+`define CORE_ALU_INST_ADD 0
+`define CORE_ALU_INST_SUB 1
+`define CORE_ALU_INST_CMP 2
+`define CORE_ALU_INST_CMP_U 3
+`define CORE_ALU_INST_XOR 4
+`define CORE_ALU_INST_SLL 5
+`define CORE_ALU_INST_SRL 6
+`define CORE_ALU_INST_SRA 7
+`define CORE_ALU_INST_OR 8
+`define CORE_ALU_INST_AND 9
+`define CORE_ALU_INST_OP1_PC 10
+`define CORE_ALU_INST_OP1_0 11
+`define CORE_ALU_INST_OP2_IMM 12
+`define CORE_ALU_INST_RS2ADR 17:13
+
+
+
+//bj_dec inst
+`define CORE_BJ_DEC_INST_WIDTH 6
+`define CORE_BJ_DEC_INST_JAL 0
+`define CORE_BJ_DEC_INST_JALR 1
+`define CORE_BJ_DEC_INST_BEQ 2
+`define CORE_BJ_DEC_INST_BNE 3
+`define CORE_BJ_DEC_INST_BLT 4
+`define CORE_BJ_DEC_INST_BGE 5
+
+//lsu inst
+`define CORE_LSU_INST_WIDTH 6
+`define CORE_LSU_INST_LOAD 0
+`define CORE_LSU_INST_STORE 1
+`define CORE_LSU_INST_B 2
+`define CORE_LSU_INST_H 3
+`define CORE_LSU_INST_W 4
+`define CORE_LSU_INST_LU 5
+
+//csr inst
+`define CORE_CSR_INST_WIDTH 7
+`define CORE_CSR_INST_R 0
+`define CORE_CSR_INST_W 1
+`define CORE_CSR_INST_C_S 2
+`define CORE_CSR_INST_ZIMM 3
+
+`define CORE_CSR_INST_EBREAK 4
+`define CORE_CSR_INST_ECALL 5
+`define CORE_CSR_INST_MRET 6
+
+//IFU
+`define CORE_PC_RESET_VALUE `CORE_PC_WIDTH'h80000000
+
+
+//LSU
+`define CORE_LSU_WMASK_WIDTH 8
+
+//csr module
+`define CORE_MSTATUS_RESET_VALUE 32'h1800
+
+//DPI_C
+`define DPI_C

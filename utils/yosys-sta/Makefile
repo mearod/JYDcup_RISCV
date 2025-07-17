@@ -1,8 +1,8 @@
 PROJ_PATH = $(shell pwd)
 
-RTL_DIR ?= $(abspath ../../rtl)
+RTL_DIR ?= $(abspath ../../rtl_version2)
 
-DESIGN ?= core_ex_regfile
+DESIGN ?= core_cpu
 SDC_FILE ?= $(PROJ_PATH)/JYD_chip/jyd.sdc
 RTL_FILES ?= $(shell find $(RTL_DIR) -name "*.v")
 						 
