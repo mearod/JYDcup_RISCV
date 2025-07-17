@@ -37,7 +37,10 @@ module core_ls_lsu_test(
 
     output  [`CORE_RFIDX_WIDTH-1:0] rd_idx_ls_forward,
     output  rd_wen_ls_forward,
-    output  [`CORE_XLEN-1:0] rd_dat_ls_forward
+    output  [`CORE_XLEN-1:0] rd_dat_ls_forward,
+
+    input   ex_ebreak_sim,
+    output  ls_ebreak_sim
 );
 
 //pipeline related////
@@ -170,6 +173,15 @@ gnrl_dfflr #(`CORE_RFIDX_WIDTH,`CORE_RFIDX_WIDTH'b0)rd_idx_reg(
     .rst_n 	(rst_n  ),
     .din   	(i_rd_idx    ),
     .dout  	(rd_idx   ),
+    .wen   	(pipeline_update    )
+);
+
+
+gnrl_dfflr #(1,1'b0)ebreak_reg(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(ex_ebreak_sim    ),
+    .dout  	(ls_ebreak_sim   ),
     .wen   	(pipeline_update    )
 );
 //////////////

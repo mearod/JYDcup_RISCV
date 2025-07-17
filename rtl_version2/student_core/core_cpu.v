@@ -138,6 +138,7 @@ wire [`CORE_LSU_INST_WIDTH-1:0] ex_ls_lsu_inst_bus;
 wire [`CORE_XLEN-1:0] ex_ls_exu_result;
 wire [`CORE_XLEN-1:0] ex_ls_rs2_dat;
 wire ex_ls_rd_wen;
+wire ex_ebreak_sim;
 
 `ifdef DPI_C
 wire difftest_end;    
@@ -179,7 +180,7 @@ core_ex_exu u_core_ex_exu(
     
 
 
-    .rv_ebreak_sim      (rv_ebreak_sim        )
+    .rv_ebreak_sim      (ex_ebreak_sim        )
 
 );
 
@@ -223,7 +224,10 @@ core_ls_lsu_test u_core_ls_lsu_test(
     .csr_alu_result     	(ls_csr_alu_result      ),
     .rd_idx_ls_forward  	(rd_idx_ls_forward   ),
     .rd_wen_ls_forward  	(rd_wen_ls_forward   ),
-    .rd_dat_ls_forward  	(rd_dat_ls_forward   )
+    .rd_dat_ls_forward  	(rd_dat_ls_forward   ),
+
+    .ex_ebreak_sim      (ex_ebreak_sim        ),
+    .ls_ebreak_sim      (rv_ebreak_sim        )
 );
 
 
