@@ -68,4 +68,4 @@
 `define CORE_MSTATUS_RESET_VALUE 32'h1800
 
 //DPI_C
-`define DPI_C
+//`define DPI_C

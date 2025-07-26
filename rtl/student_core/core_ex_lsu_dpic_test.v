@@ -92,7 +92,14 @@ always @(posedge clk) begin
     end
 end
 `else
-assign read_data_unaligned = biu_pmem_read;
+always @(*)begin
+    if (lsu_inst_bus[`CORE_LSU_INST_LOAD]) begin 
+        read_data_unaligned = biu_pmem_read;
+    end
+    else begin
+        read_data_unaligned = 0;
+    end
+end
 `endif
 ////////////////////
 
