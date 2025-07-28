@@ -57,7 +57,7 @@ wire pipeline_update = valid_in & ready_in;
 wire valid_out_next  = valid_in & (~cmt_pipeline_flush_req) & ~load_used_wait_next_state;
 
 
-assign ready_in      = (ready_out | ~valid_out) & 
+assign ready_in      = (ready_out) & 
                         (~flag_load_used | (~load_used_wait_next_state & load_used_wait_state));
 
 
@@ -84,9 +84,9 @@ wire    flag_load_used =           lsu_inst_bus_reg[`CORE_LSU_INST_LOAD]
 
 assign  load_used_wait_next_state = load_used_wait_state ?
                                     ~ready_out : 
-                                    flag_load_used;
+                                    flag_load_used & ready_out;
 
-/////////////////////
+///////////////////////
 
 //pipeline regs//////////
 wire branch_predict_reg;

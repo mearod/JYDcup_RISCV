@@ -46,9 +46,9 @@ module core_ls_lsu_test(
 //pipeline related////
 wire pipeline_update = valid_in & ready_in;
 
-wire valid_out_next  = valid_in;//no memory access delay
+wire valid_out_next  = valid_in & (isu_state_nxt == ISU_READY) | (isu_state_nxt == ISU_READY & isu_state == ISU_READING);
 
-assign ready_in      = (ready_out | ~valid_out) ;
+assign ready_in      = (ready_out | ~valid_out) & (isu_state == ISU_READY);
 
 gnrl_dffr #(1, 1'b0) idu_valid_out(
     .clk   	(clk    ),
@@ -56,6 +56,25 @@ gnrl_dffr #(1, 1'b0) idu_valid_out(
     .din   	(valid_out_next),
     .dout  	(valid_out )
 );
+
+
+///state machine////
+localparam ISU_READY = 1'b0;
+localparam ISU_READING = 1'b1;
+
+wire isu_state_nxt;
+wire isu_state;
+gnrl_dffr #(1,1'b0)isu_state_reg(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(isu_state_nxt    ),
+    .dout  	(isu_state   )
+);
+
+assign isu_state_nxt = (isu_state == ISU_READY) ? 
+    ((pipeline_update & i_lsu_inst_bus[`CORE_LSU_INST_LOAD]) ? ISU_READING : ISU_READY):
+    ISU_READY;//delay the pipeline by one cycle when load from ram.
+
 
 /////////////////////
 
@@ -84,7 +103,7 @@ assign biu_pmem_write       = write_data_aligned;
 /////////DPI_C:for verilator test
 `ifdef DPI_C
 
-always @(*)begin
+always @(posedge clk)begin
     if (lsu_inst_bus[`CORE_LSU_INST_LOAD]) begin 
         read_data_unaligned = pmem_read(mem_addr);
     end
@@ -102,7 +121,7 @@ always @(posedge clk) begin
     end
 end
 `else
-always @(*)begin
+always @(posedge clk)begin
     if (lsu_inst_bus[`CORE_LSU_INST_LOAD]) begin 
         read_data_unaligned = biu_pmem_read;
     end
