@@ -3,6 +3,7 @@
 
 //#define DIFFTEST
 #define WAVE_TRACE
+#define RISCV_TESTS_ENV
 
 #define signal(s) top->rootp->core_cpu__DOT__##s
 #define cpu_gpr(s) signal(u_core_id_regfile__DOT__rf_r[s])

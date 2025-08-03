@@ -39,44 +39,78 @@ module core_ls_lsu_test(
     output  rd_wen_ls_forward,
     output  [`CORE_XLEN-1:0] rd_dat_ls_forward,
 
+    input   [`CORE_PC_WIDTH-1:0] ex_pc,
+    output  [`CORE_PC_WIDTH-1:0] ls_pc,
+    
     input   ex_ebreak_sim,
-    output  ls_ebreak_sim
+    output  ls_ebreak_sim,
+
+    input   ex_ecall_sim,
+    output  ls_ecall_sim
 );
 
 //pipeline related////
-wire pipeline_update = valid_in & ready_in;
+wire pipeline_update = ((pipeline_state == PIPE_IDLE) & valid_in & ready_in) || 
+                        ((pipeline_state == PIPE_COMMITING) & valid_out & ready_out & valid_in & ready_in);
 
-wire valid_out_next  = valid_in & (isu_state_nxt == ISU_READY) | (isu_state_nxt == ISU_READY & isu_state == ISU_READING);
+localparam PIPE_IDLE = 2'b0;
+localparam PIPE_WAITING = 2'b1;
+localparam PIPE_COMMITING = 2'b10;
 
-assign ready_in      = (ready_out | ~valid_out) & (isu_state == ISU_READY);
+wire [1:0]pipeline_state;
+reg [1:0]pipeline_next_state;
 
-gnrl_dffr #(1, 1'b0) idu_valid_out(
+always @(*) begin
+    case(pipeline_state)
+        PIPE_IDLE: begin
+            if(valid_in & ready_in) begin
+                if(i_lsu_inst_bus[`CORE_LSU_INST_LOAD]) begin
+                    pipeline_next_state = PIPE_WAITING;
+                end
+                else begin
+                    pipeline_next_state = PIPE_COMMITING;
+                end
+            end
+            else begin
+                pipeline_next_state = PIPE_IDLE;
+            end
+        end
+        PIPE_WAITING: begin
+            pipeline_next_state = PIPE_COMMITING;
+        end
+        PIPE_COMMITING: begin
+            if(valid_in & ready_in & valid_out & ready_out) begin
+                if(i_lsu_inst_bus[`CORE_LSU_INST_LOAD]) begin
+                    pipeline_next_state = PIPE_WAITING;
+                end
+                else begin
+                    pipeline_next_state = PIPE_COMMITING;
+                end
+            end
+            else if (valid_out & ready_out) begin
+                pipeline_next_state = PIPE_IDLE;
+            end
+            else begin
+                pipeline_next_state = PIPE_COMMITING;
+            end
+        end
+        default: begin
+            pipeline_next_state = PIPE_IDLE;
+        end
+    endcase
+end
+
+assign valid_out = pipeline_state == PIPE_COMMITING ;
+assign ready_in = pipeline_state == PIPE_IDLE | (pipeline_state == PIPE_COMMITING & valid_out & ready_out);
+
+gnrl_dffr #(2, 2'b0) pipeline_state_reg(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
-    .din   	(valid_out_next),
-    .dout  	(valid_out )
+    .din   	(pipeline_next_state),
+    .dout  	(pipeline_state )
 );
 
 
-///state machine////
-localparam ISU_READY = 1'b0;
-localparam ISU_READING = 1'b1;
-
-wire isu_state_nxt;
-wire isu_state;
-gnrl_dffr #(1,1'b0)isu_state_reg(
-    .clk   	(clk    ),
-    .rst_n 	(rst_n  ),
-    .din   	(isu_state_nxt    ),
-    .dout  	(isu_state   )
-);
-
-assign isu_state_nxt = (isu_state == ISU_READY) ? 
-    ((pipeline_update & i_lsu_inst_bus[`CORE_LSU_INST_LOAD]) ? ISU_READING : ISU_READY):
-    ISU_READY;//delay the pipeline by one cycle when load from ram.
-
-
-/////////////////////
 
 
 /////////align module
@@ -204,11 +238,27 @@ gnrl_dfflr #(`CORE_RFIDX_WIDTH,`CORE_RFIDX_WIDTH'b0)rd_idx_reg(
 );
 
 
+gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)pc_reg(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(ex_pc    ),
+    .dout  	(ls_pc   ),
+    .wen   	(pipeline_update    )
+);
+
 gnrl_dfflr #(1,1'b0)ebreak_reg(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
     .din   	(ex_ebreak_sim    ),
     .dout  	(ls_ebreak_sim   ),
+    .wen   	(pipeline_update    )
+);
+
+gnrl_dfflr #(1,1'b0)ecall_reg(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(ex_ecall_sim    ),
+    .dout  	(ls_ecall_sim   ),
     .wen   	(pipeline_update    )
 );
 //////////////

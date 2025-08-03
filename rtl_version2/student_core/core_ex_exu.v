@@ -1,8 +1,6 @@
 `include "core_defines.v"
 
 module core_ex_exu(
-    output difftest_end,
-
     input clk,
     input rst_n,
 
@@ -44,47 +42,90 @@ module core_ex_exu(
     output  rd_wen_ex_forward,
     output  [`CORE_XLEN-1:0] rd_dat_ex_forward,
 
+    output  [`CORE_PC_WIDTH-1:0] ex_pc,
 
-    output  rv_ebreak_sim
+    output  rv_ebreak_sim,
+    output  rv_ecall_sim
 );
 
 
 
 assign rv_ebreak_sim = csr_inst_bus_reg[`CORE_CSR_INST_EBREAK];
+assign rv_ecall_sim = csr_inst_bus_reg[`CORE_CSR_INST_ECALL];
 
 //pipeline related////
-wire pipeline_update = valid_in & ready_in;
-wire valid_out_next  = valid_in & (~cmt_pipeline_flush_req) & ~load_used_wait_next_state;
+wire pipeline_update = ((pipeline_state == PIPE_IDLE) & valid_in & ready_in) ||
+                        (pipeline_state == PIPE_WAITING & ready_out & valid_in & ready_in) ||
+                        ((pipeline_state == PIPE_COMMITING) & valid_out & ready_out & valid_in & ready_in);
 
+localparam PIPE_IDLE = 2'b0;
+localparam PIPE_WAITING = 2'b1;
+localparam PIPE_COMMITING = 2'b10;
 
-assign ready_in      = (ready_out) & 
-                        (~flag_load_used | (~load_used_wait_next_state & load_used_wait_state));
+wire [1:0]pipeline_state;
+reg [1:0]pipeline_next_state;
 
+always @(*) begin
+    case(pipeline_state)
+        PIPE_IDLE: begin
+            if(valid_in & ready_in) begin
+                pipeline_next_state = PIPE_COMMITING;
+            end
+            else begin
+                pipeline_next_state = PIPE_IDLE;
+            end
+        end
+        PIPE_WAITING: begin
+            if(ready_out) begin
+                if(valid_in & ready_in) begin
+                    pipeline_next_state = PIPE_COMMITING;
+                end
+                else begin
+                    pipeline_next_state = PIPE_IDLE;
+                end
+            end
+            else begin
+                pipeline_next_state = PIPE_WAITING;
+            end
+        end
+        PIPE_COMMITING: begin
+            if(valid_in & valid_out & ready_out) begin
+                if(flag_load_used) begin
+                    pipeline_next_state = PIPE_WAITING;
+                end
+                else begin
+                    pipeline_next_state = PIPE_COMMITING;
+                end
+            end
+            else if (valid_out & ready_out) begin
+                pipeline_next_state = PIPE_IDLE;
+            end
+            else begin
+                pipeline_next_state = PIPE_COMMITING;
+            end
+        end
+        default: begin
+            pipeline_next_state = PIPE_IDLE;
+        end
+    endcase
+end
+                       
 
-gnrl_dffr #(1, 1'b0) exu_valid_out(
+assign valid_out = pipeline_state == PIPE_COMMITING;
+assign ready_in = ((pipeline_state == PIPE_IDLE) | (pipeline_state == PIPE_COMMITING & valid_out & ready_out & ~flag_load_used)) 
+                    | (pipeline_state == PIPE_WAITING & ready_out);
+
+gnrl_dffr #(2, 2'b0) pipeline_state_reg(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
-    .din   	(valid_out_next),
-    .dout  	(valid_out )
-);
-
-//load used related state machine
-wire load_used_wait_state;
-wire load_used_wait_next_state;
-gnrl_dffr #(1, 1'b0) exu_load_used_wait_state(
-    .clk   	(clk    ),
-    .rst_n 	(rst_n  ),
-    .din   	(load_used_wait_next_state),
-    .dout  	(load_used_wait_state )
+    .din   	(pipeline_next_state),
+    .dout  	(pipeline_state )
 );
 
 wire    flag_load_used =           lsu_inst_bus_reg[`CORE_LSU_INST_LOAD] 
                                 & (rd_idx_ex_forward == i_rs1_idx | rd_idx_ex_forward == i_rs2_idx)
                                 & rd_wen;
 
-assign  load_used_wait_next_state = load_used_wait_state ?
-                                    ~ready_out : 
-                                    flag_load_used & ready_out;
 
 ///////////////////////
 
@@ -327,12 +368,14 @@ assign lsu_inst_bus = lsu_inst_bus_reg;
 assign exu_result = csr_alu_wr_en ? csr_alu_wr_dat : alu_result;
 assign rs2_dat = rs2_dat_reg;
 
-assign cmt_pipeline_flush_req = cmt_pipeline_flush_req_tmp & valid_out;
+assign cmt_pipeline_flush_req = cmt_pipeline_flush_req_tmp & valid_out & ready_out;
 
 assign rd_wen = rd_wen_reg;
 assign rd_idx_ex_forward  = rd_idx_reg;
 assign rd_wen_ex_forward = rd_wen_reg & ~lsu_inst_bus_reg[`CORE_LSU_INST_LOAD] & valid_out; //if load is used, rd_wen_ex_forward is invalid.
 assign rd_dat_ex_forward  = exu_result;
+
+assign ex_pc = pc_reg;
 /////////////////////
 
 endmodule

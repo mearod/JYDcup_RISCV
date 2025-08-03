@@ -16,6 +16,10 @@ int main(int argc, char *argv[]) {
 
 	init_monitor(argc, argv);
 
+#ifdef RISCV_TESTS_ENV
+	printf("WARNING: NOW IN RISCV_TESTS_ENV MODE\n");
+#endif
+
 	sdb_mainloop();
 
 	delete top;

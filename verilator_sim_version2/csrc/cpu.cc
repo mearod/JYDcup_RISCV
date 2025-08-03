@@ -9,6 +9,7 @@ VerilatedFstC *tfp = NULL;
 VerilatedContext *contextp = NULL;
 
 int trigger_difftest = 0;
+bool programEndFlag = false;
 extern int wave_trace;
 
 static uint64_t total_cycle = 0;
@@ -29,6 +30,13 @@ static void one_cycle() {
 #ifdef WAVE_TRACE
 	if (wave_trace) { tfp->dump(contextp->time()); contextp->timeInc(1); }
 #endif
+
+#ifdef RISCV_TESTS_ENV
+	programEndFlag = top->rv_ecall_sim;
+#else
+	programEndFlag = top->rv_ebreak_sim;
+#endif
+	
 }
 
 void reset(uint32_t n) {
@@ -39,7 +47,7 @@ void reset(uint32_t n) {
 }
 
 void cpu_exec(unsigned long n) {
-	if (top->rv_ebreak_sim || trigger_difftest) {
+	if (programEndFlag || trigger_difftest) {
 		printf("the program is ended.\n");
 		return;
 	}
@@ -59,7 +67,7 @@ void cpu_exec(unsigned long n) {
 		}
 		write_back = top->inst_end;
 #endif
-		if (top->rv_ebreak_sim || trigger_difftest) break;
+		if (programEndFlag || trigger_difftest) break;
 	}
 
 	if (trigger_difftest) {
@@ -70,9 +78,12 @@ void cpu_exec(unsigned long n) {
 		one_cycle();
 		return;
 	}
-	if (!top->rv_ebreak_sim) return;
+	if (!programEndFlag) return;
 	printf("total cycle: %ld\ntotal inst: %ld\nIPC: %f\n", 
 			total_cycle, total_inst, (double)total_inst/total_cycle);
+	for(int i = 0; i < 3; i++) {
+		one_cycle();
+	}
 	if (cpu_gpr(10))
 		printf("\33[1;31mHIT BAD TRAP\33[1;0m (return value: %d) ", cpu_gpr(10));
 	else printf("\33[1;32mHIT GOOD TRAP\33[1;0m ");

@@ -13,6 +13,7 @@ module core_cpu(
     output  biu_pmem_write_en,
 
     output  rv_ebreak_sim,
+    output  rv_ecall_sim,
 	output  inst_end
 );
 
@@ -138,15 +139,14 @@ wire [`CORE_LSU_INST_WIDTH-1:0] ex_ls_lsu_inst_bus;
 wire [`CORE_XLEN-1:0] ex_ls_exu_result;
 wire [`CORE_XLEN-1:0] ex_ls_rs2_dat;
 wire ex_ls_rd_wen;
-wire ex_ebreak_sim;
 
-`ifdef DPI_C
-wire difftest_end;    
-`endif
+wire [`CORE_PC_WIDTH-1:0]ex_pc;
+wire ex_ebreak_sim;
+wire ex_ecall_sim;
+
+
+
 core_ex_exu u_core_ex_exu(
-    `ifdef DPI_C
-    .difftest_end               (),
-    `endif
     .clk                    	(clk                       ),
     .rst_n                  	(rst_n                     ),
     .valid_in               	(valid_id_ex               ),
@@ -179,8 +179,9 @@ core_ex_exu u_core_ex_exu(
     .rd_dat_ex_forward       	(rd_dat_ex_forward         ),
     
 
-
-    .rv_ebreak_sim      (ex_ebreak_sim        )
+    .ex_pc              (ex_pc),
+    .rv_ebreak_sim      (ex_ebreak_sim        ),
+    .rv_ecall_sim      (ex_ecall_sim                )
 
 );
 
@@ -196,6 +197,7 @@ wire [`CORE_XLEN-1:0] ls_csr_alu_result;
 wire [`CORE_RFIDX_WIDTH-1:0] rd_idx_ls_forward;
 wire rd_wen_ls_forward;
 wire [`CORE_XLEN-1:0] rd_dat_ls_forward;
+wire [`CORE_PC_WIDTH-1:0]ls_pc;
 
 core_ls_lsu_test u_core_ls_lsu_test(
     .clk                	(clk                 ),
@@ -226,17 +228,26 @@ core_ls_lsu_test u_core_ls_lsu_test(
     .rd_wen_ls_forward  	(rd_wen_ls_forward   ),
     .rd_dat_ls_forward  	(rd_dat_ls_forward   ),
 
+    .ex_pc(ex_pc),
+    .ls_pc(ls_pc),
+
     .ex_ebreak_sim      (ex_ebreak_sim        ),
-    .ls_ebreak_sim      (rv_ebreak_sim        )
+    .ls_ebreak_sim      (rv_ebreak_sim        ),
+
+    .ex_ecall_sim      (ex_ecall_sim        ),
+    .ls_ecall_sim      (rv_ecall_sim        )
 );
 
-
+`ifdef DPI_C
+wire difftest_end;    
+`endif
 wire ready_ls_wb;
 wire wb_en;
 wire [`CORE_XLEN-1:0] wb_data;
 wire [`CORE_RFIDX_WIDTH-1:0] rd_idx_wb_forward;
 wire rd_wen_wb_forward;
 wire [`CORE_XLEN-1:0] rd_dat_wb_forward;
+wire [`CORE_PC_WIDTH-1:0]wb_pc;
 core_wb_wbu core_wb_wbu_instance(
     .clk(clk),
     .rst_n(rst_n),
@@ -255,7 +266,10 @@ core_wb_wbu core_wb_wbu_instance(
     .wb_data(wb_data),
     .rd_idx_wb_forward(rd_idx_wb_forward),
     .rd_wen_wb_forward(rd_wen_wb_forward),
-    .rd_dat_wb_forward(rd_dat_wb_forward)
+    .rd_dat_wb_forward(rd_dat_wb_forward),
+
+    .ls_pc(ls_pc),
+    .wb_pc(wb_pc)
 );
 
 

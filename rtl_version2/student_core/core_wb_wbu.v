@@ -28,26 +28,40 @@ module core_wb_wbu(
 
     output  [`CORE_RFIDX_WIDTH-1:0] rd_idx_wb_forward,
     output  rd_wen_wb_forward,
-    output  [`CORE_XLEN-1:0] rd_dat_wb_forward
+    output  [`CORE_XLEN-1:0] rd_dat_wb_forward,
+
+    input   [`CORE_PC_WIDTH-1:0] ls_pc,
+    output  [`CORE_PC_WIDTH-1:0] wb_pc
 );
 
 
 //pipeline related////
-wire pipeline_update = valid_in & ready_in;
 
-wire valid_out_next  = valid_in;
+wire pipeline_update = ((pipeline_state == PIPE_IDLE) & valid_in & ready_in) || 
+                        ((pipeline_state == PIPE_COMMITING) & valid_out & ready_out & valid_in & ready_in);
 
-assign ready_in      = 1'b1 ;
+localparam PIPE_IDLE = 1'b0;
+localparam PIPE_COMMITING = 1'b1;
 
-gnrl_dffr #(1, 1'b0) idu_valid_out(
+wire pipeline_state;
+wire pipeline_next_state;
+
+assign pipeline_next_state = (pipeline_state == PIPE_IDLE) ? 
+                            (valid_in & ready_in) :
+                            ~(valid_out & ready_out & ~(valid_in & ready_in));
+
+assign valid_out = pipeline_state == PIPE_COMMITING ;
+assign ready_in = 1'b1;
+
+gnrl_dffr #(1, 1'b0) pipeline_state_reg(
     .clk   	(clk    ),
     .rst_n 	(rst_n  ),
-    .din   	(valid_out_next),
-    .dout  	(valid_out )
+    .din   	(pipeline_next_state),
+    .dout  	(pipeline_state )
 );
 
 
-/////////////////////
+/////////////////////////
 
 
 
@@ -99,6 +113,15 @@ gnrl_dfflr #(`CORE_RFIDX_WIDTH,`CORE_RFIDX_WIDTH'b0)rd_idx_reg(
     .dout  	(rd_idx   ),
     .wen   	(pipeline_update    )
 );
+
+gnrl_dfflr #(`CORE_PC_WIDTH,`CORE_PC_WIDTH'b0)pc_reg(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(ls_pc    ),
+    .dout  	(wb_pc   ),
+    .wen   	(pipeline_update    )
+);
+
 ///////////////////////
 
 

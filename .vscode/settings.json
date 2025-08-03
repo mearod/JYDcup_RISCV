@@ -11,6 +11,18 @@
         "string": "cpp",
         "limits": "cpp",
         "memory": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "stdlib.h": "c",
+        "random": "c",
+        "system_error": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "utility": "c",
+        "deque": "c",
+        "unordered_map": "c",
+        "vector": "c",
+        "numbers": "cpp",
+        "typeinfo": "cpp"
     }
 }

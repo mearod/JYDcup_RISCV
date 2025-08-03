@@ -52,12 +52,29 @@ module core_id_idu(
 
 
 //pipline related//////
-wire pipeline_update = valid_in & ready_in;
+wire pipeline_update = ((pipeline_state == PIPE_IDLE) & valid_in & ready_in) || 
+                        ((pipeline_state == PIPE_COMMITING) & valid_out & ready_out & valid_in & ready_in);
 
-wire valid_out_next  = valid_in & ~i_pipe_flush_req;
+localparam PIPE_IDLE = 1'b0;
+localparam PIPE_COMMITING = 1'b1;
 
-assign ready_in      = (ready_out | ~valid_out) ;
+wire pipeline_state;
+wire pipeline_next_state;
 
+assign pipeline_next_state = i_pipe_flush_req ? PIPE_IDLE :
+                            ((pipeline_state == PIPE_IDLE) ?         
+                            (valid_in & ready_in) :
+                            ~(valid_out & ready_out & ~(valid_in & ready_in)));
+
+assign valid_out = pipeline_state == PIPE_COMMITING & ~i_pipe_flush_req;
+assign ready_in = (pipeline_state == PIPE_IDLE) | (pipeline_state == PIPE_COMMITING & valid_out & ready_out);
+
+gnrl_dffr #(1, 1'b0) pipeline_state_reg(
+    .clk   	(clk    ),
+    .rst_n 	(rst_n  ),
+    .din   	(pipeline_next_state),
+    .dout  	(pipeline_state )
+);
 
 
 
@@ -69,12 +86,6 @@ wire raw_ex_rs2_conflict = ((rd_idx_ex_forward == o_rs2_idx) & (rd_idx_ex_forwar
 wire raw_ls_rs2_conflict = ((rd_idx_ls_forward == o_rs2_idx) & (rd_idx_ls_forward != 0)) & rd_wen_ls_forward & o_rs2_ren;
 wire raw_wb_rs2_conflict = ((rd_idx_wb_forward == o_rs2_idx) & (rd_idx_wb_forward != 0)) & rd_wen_wb_forward & o_rs2_ren;
 
-gnrl_dffr #(1, 1'b0) idu_valid_out(
-    .clk   	(clk    ),
-    .rst_n 	(rst_n  ),
-    .din   	(valid_out_next),
-    .dout  	(valid_out )
-);
 
 ////////////////////
 
