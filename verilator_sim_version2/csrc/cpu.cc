@@ -58,12 +58,20 @@ void cpu_exec(unsigned long n) {
 		if (top->inst_end) ++total_inst;
 #ifdef DIFFTEST
 		static int write_back = 0;
+		static int difftest_skip = 0;
 		if (write_back == 1) {
+			difftest_step();
+			if (difftest_skip) {
+				difftest_skip = 0;
+				difftest_skip_ref();
+			}
+		}
+		if (top->inst_end) {
 			if (LSU_ADDR == SERIAL_BASE || 
 					LSU_ADDR == TIMER_BASE  ||
-					LSU_ADDR == TIMER_BASE + 4) 
-				difftest_skip_ref();
-			difftest_step();
+					LSU_ADDR == TIMER_BASE + 4) {
+				difftest_skip = 1;
+			}
 		}
 		write_back = top->inst_end;
 #endif
